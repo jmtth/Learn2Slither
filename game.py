@@ -3,6 +3,7 @@ import pygame
 import snake
 import apple
 
+
 class Game:
     def __init__(self):
         pygame.display.set_caption('Learn2Slither Snake')
@@ -16,12 +17,15 @@ class Game:
         self.gameover = False
         self.score = 0
         self.snake_size = self.snake.get_size()  # Initialize snake size for score tracking
+        self.pause = True
 
     def run(self):
         while self.running:
             self.handle_events()
             if not self.gameover:
-                self.update()
+                self.snake.vision(self.fruits) # Get snake's vision of the environment
+                if not self.pause:
+                    self.update()
                 self.draw()
             self.clock.tick(c.FPS)
 
@@ -29,21 +33,40 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            pressed = pygame.key.get_pressed()
-            if pressed[pygame.K_UP]:
-                self.snake.change_direction((0, -1))
-            elif pressed[pygame.K_DOWN]:
-                self.snake.change_direction((0, 1))
-            elif pressed[pygame.K_LEFT]:
-                self.snake.change_direction((-1, 0))
-            elif pressed[pygame.K_RIGHT]:
-                self.snake.change_direction((1, 0))
-            elif pressed[pygame.K_ESCAPE]:
-                self.gameover= False
-                self.snake = snake.Snake((c.GAME_WIDTH // 2, c.GAME_HEIGHT // 2))
-                self.fruits = [apple.Apple(c.RED), apple.Apple(c.GREEN), apple.Apple(c.GREEN)]
-                self.score = 0
-                self.snake_size = self.snake.get_size()  # Reset snake size for score
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    self.snake.change_direction((0, -1))
+                elif event.key == pygame.K_DOWN:
+                    self.snake.change_direction((0, 1))
+                elif event.key == pygame.K_LEFT:
+                    self.snake.change_direction((-1, 0))
+                elif event.key == pygame.K_RIGHT:
+                    self.snake.change_direction((1, 0))
+                elif event.key == pygame.K_ESCAPE: 
+                    self.gameover = False
+                    self.snake = snake.Snake((c.GAME_WIDTH // 2, c.GAME_HEIGHT // 2))
+                    self.fruits = [apple.Apple(c.RED), apple.Apple(c.GREEN), apple.Apple(c.GREEN)]
+                    self.score = 0
+                    self.snake_size = self.snake.get_size()  # Reset snake size for score
+                elif event.key == pygame.K_p:
+                    self.pause = not self.pause
+
+
+            # pressed = pygame.key.get_pressed()
+            # if pressed[pygame.K_UP]:
+            #     self.snake.change_direction((0, -1))
+            # elif pressed[pygame.K_DOWN]:
+            #     self.snake.change_direction((0, 1))
+            # elif pressed[pygame.K_LEFT]:
+            #     self.snake.change_direction((-1, 0))
+            # elif pressed[pygame.K_RIGHT]:
+            #     self.snake.change_direction((1, 0))
+            # elif pressed[pygame.K_ESCAPE]:
+            #     self.gameover= False
+            #     self.snake = snake.Snake((c.GAME_WIDTH // 2, c.GAME_HEIGHT // 2))
+            #     self.fruits = [apple.Apple(c.RED), apple.Apple(c.GREEN), apple.Apple(c.GREEN)]
+            #     self.score = 0
+            #     self.snake_size = self.snake.get_size()  # Reset snake size for score
 
     def update(self):
         self.score += self.snake.move(self.fruits)  # Update snake position
@@ -54,12 +77,13 @@ class Game:
     def draw(self):
         self.screen.fill(c.BG_COLOR)  # Clear screen with background color
         self.draw_grid()  # Draw the grid
-        self.draw_menu()  # Draw the menu
+        
         self.snake.draw(self.screen)  # Draw the snake
         for fruit in self.fruits:
             fruit.draw(self.screen)  # Draw each fruit
         if self.gameover:
             self.gameover_screen()  # Show game over screen
+        self.draw_menu()  # Draw the menu
         # Draw game elements here
         pygame.display.flip()  # Update the display
 
