@@ -18,7 +18,7 @@ class App:
         self.scene = MainMenuScene(self)
         self.gameover = False
         self.score = 0
-        # self.snake_size = self.snake.get_size() 
+        # self.snake_size = self.snake.get_size()
         self.pause = True
 
     def change_scene(self, scene):

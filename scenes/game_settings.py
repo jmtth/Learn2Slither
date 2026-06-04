@@ -1,39 +1,83 @@
 import pygame
 from scenes.scene import Scene
-from scenes.mainmenu_scene import MainMenuScene
-import render.button_render as button
 import const as c
 
 
 class GameSettings(Scene):
+
+    @property
+    def nb_cells(self):
+        return self.app.config.game.nb_cells
+
+    @nb_cells.setter
+    def nb_cells(self, value):
+        self.app.config.game.nb_cells = value
+
+    @property
+    def speed(self):
+        return self.app.config.render.fps
+
+    @speed.setter
+    def speed(self, value):
+        self.app.config.render.fps = value
+
+    @property
+    def screen_width(self):
+        return self.app.config.render.screen_width
+
     def __init__(self, app):
         self.app = app
         self.nb_cells_index = 0
-        self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 18)
-        self.font_title = pygame.font.Font("assets/PressStart2P-Regular.ttf", 26)
+        self.speed_index = 0
+        self.font = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", 18)
+        self.font_title = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", 26)
+        self.font_instructions = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", 12)
 
-    def handle_event(self, events):
-        for event in events:
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.app.config.nb_cells = c.NB_CELLS_SETTINGS[self.nb_cells_index - 1 if self.nb_cells_index - 1 >0 else 0]
-                if event.key == pygame.K_RIGHT:
-                    self.app.config.nb_cells = c.NB_CELLS_SETTINGS[self.nb_cells_index + 1 if self.nb_cells_index + 1 < len(c.NB_CELLS_SETTINGS) else len(c.NB_CELLS_SETTINGS) - 1]
-                if event.key == pygame.K_ESCAPE:
-                    self.app.change_scene(MainMenuScene(self.app))
+    def handle_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self.nb_cells_index = max(0, self.nb_cells_index - 1)
+                self.nb_cells = c.CELLS_OPTIONS[self.nb_cells_index]
+            if event.key == pygame.K_RIGHT:
+                self.nb_cells_index = min(
+                    len(c.CELLS_OPTIONS) - 1, self.nb_cells_index + 1)
+                self.nb_cells = c.CELLS_OPTIONS[self.nb_cells_index]
+            if event.key == pygame.K_UP:
+                self.speed_index = min(
+                    len(c.FPS_OPTIONS) - 1, self.speed_index + 1)
+                self.speed = c.FPS_OPTIONS[self.speed_index]
+            if event.key == pygame.K_DOWN:
+                self.speed_index = max(0, self.speed_index - 1)
+                self.speed = c.FPS_OPTIONS[self.speed_index]
+            if event.key == pygame.K_ESCAPE:
+                from scenes.mainmenu_scene import MainMenuScene
+                self.app.change_scene(MainMenuScene(self.app))
 
     def update(self):
         pass
 
     def draw(self, screen):
+        pygame.display.set_caption('Learn2Slither Snake: Game Settings')
+        screen.fill(c.BLACK)
+        speed = self.speed
+        size = self.nb_cells
         title = self.font_title.render("LEARN 2 SLITHER", True, c.GREEN)
-        screen.blit(title, title.get_rect(center=(c.SCREEN_SIZE[0] // 2, 80)))
-        self.start_button.draw(screen)
-        self.settings_button.draw(screen)
-        self.quit_button.draw(screen)
-        vol_display = "MUTED" if muted else f"VOLUME: {volume}/10"
-        volume_text = self.font.render(vol_display, True, (255, 255, 255))
-        screen.blit(volume_text, volume_text.get_rect(center=(c.SCREEN_SIZE[0] // 2, 150)))
+        screen.blit(title, title.get_rect(center=(self.screen_width // 2, 80)))
+        board_size_text = self.font.render(
+            f"BOARD SIZE: {size}/{c.CELLS_OPTIONS[-1]}", True, (255, 255, 255))
+        speed_text = self.font.render(f"SPEED: {speed}", True, (255, 255, 255))
+        screen.blit(board_size_text, board_size_text.get_rect(
+            center=(self.screen_width // 2, 150)))
+        screen.blit(speed_text, speed_text.get_rect(
+            center=(self.screen_width // 2, 200)))
+        instructions = "← → to change board size \n"
+        instructions = instructions + "↑ ↓ to adjust speed | ESC to return"
+        lines = instructions.split("\n")
+        for i, line in enumerate(lines):
+            txt = self.font_instructions.render(line, True, (180, 180, 180))
+            screen.blit(txt, txt.get_rect(
+                center=(self.screen_width // 2, 250 + i * 30)))
 
-        instructions = self.font.render("← → to adjust | M to mute | ESC to return", True, (180, 180, 180))
-        screen.blit(instructions, instructions.get_rect(center=(c.SCREEN_SIZE[0] // 2, 250)))

@@ -6,7 +6,7 @@ class Scene(ABC):
         self.app = app
 
     @abstractmethod
-    def handle_event(self, events):
+    def handle_event(self, event):
         pass
 
     @abstractmethod

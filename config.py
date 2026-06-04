@@ -11,7 +11,8 @@ class GameConfig:
 @dataclass
 class RenderConfig:
     screen_width: int = 600
-    screen_height: int = 600
+    screen_height: int = 750
+    game_height: int = 600
     show_grid: bool = True
     show_vision: bool = False
     fps: int = 5

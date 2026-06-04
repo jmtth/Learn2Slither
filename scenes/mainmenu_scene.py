@@ -11,7 +11,9 @@ class MainMenuScene(Scene):
     def __init__(self, app):
         self.app = app
         self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 18)
-        self.font_title = pygame.font.Font("assets/PressStart2P-Regular.ttf", 26)
+        self.font_title = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", 26)
+
         self.start_button = button.Button(200, 150, 200, 60,
                                           "Start Game",
                                           self.start_game,
@@ -35,7 +37,7 @@ class MainMenuScene(Scene):
                                          c.RED_CLICK)
 
     def start_game(self):
-        # self.app.change_scene(GameScene(self.app))
+        self.app.change_scene(GameScene(self.app))
         pass
 
     def open_settings(self):
@@ -45,18 +47,20 @@ class MainMenuScene(Scene):
     def quit_game(self):
         self.app.running = False
 
-    def handle_event(self, events):
-        self.start_button.handle_event(events)
-        self.settings_button.handle_event(events)
-        self.quit_button.handle_event(events)
-
+    def handle_event(self, event):
+        self.start_button.handle_event(event)
+        self.settings_button.handle_event(event)
+        self.quit_button.handle_event(event)
 
     def update(self):
         pass
 
     def draw(self, screen):
+        pygame.display.set_caption('Learn2Slither Snake: Main Menu')
+        screen.fill(c.BLACK)
         title = self.font_title.render("GAME SETTINGS", True, c.GREEN)
-        screen.blit(title, title.get_rect(center=(c.SCREEN_SIZE[0] // 2, 80)))
+        screen.blit(title, title.get_rect(
+            center=(self.app.config.render.screen_width // 2, 80)))
         self.start_button.draw(screen)
         self.settings_button.draw(screen)
         self.quit_button.draw(screen)
