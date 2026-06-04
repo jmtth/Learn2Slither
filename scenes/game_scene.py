@@ -18,6 +18,7 @@ class GameScene(Scene):
         # self.snake = snake_render.Snake(initial_position)
         # self.fruits = [apple.Apple(c.RED), apple.Apple(c.GREEN), apple.Apple(c.GREEN)]
         self.gameover = False
+        self.pending_action = None
         self.score = 0
         # self.snake_size = self.snake.get_size()  # Initialize snake size for score tracking
         self.pause = True
@@ -25,6 +26,8 @@ class GameScene(Scene):
         self.env = SnakeEnv(app.config.game)
         # self.controller = HumanController(app.config.game)
         self.renderer = GameRender(app.config)
+        self.last_move_time = 0
+        self.move_delay = app.config.render.ms  # Time in milliseconds between moves
 
     # def run(self):
     #     while self.running:
@@ -41,15 +44,19 @@ class GameScene(Scene):
             self.running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
+                self.pending_action = "UP"
                 pass
                 # self.snake.change_direction((0, -1))
             elif event.key == pygame.K_DOWN:
+                self.pending_action = "DOWN"
                 pass
                 # self.snake.change_direction((0, 1))
             elif event.key == pygame.K_LEFT:
+                self.pending_action = "LEFT"
                 pass
                 # self.snake.change_direction((-1, 0))
             elif event.key == pygame.K_RIGHT:
+                self.pending_action = "RIGHT"
                 pass
                 # self.snake.change_direction((1, 0))
             elif event.key == pygame.K_ESCAPE: 
@@ -62,7 +69,6 @@ class GameScene(Scene):
                 # self.snake_size = self.snake.get_size()  # Reset snake size for score
             elif event.key == pygame.K_p:
                 self.pause = not self.pause
-
 
             # pressed = pygame.key.get_pressed()
             # if pressed[pygame.K_UP]:
@@ -81,6 +87,15 @@ class GameScene(Scene):
             #     self.snake_size = self.snake.get_size()  # Reset snake size for score
 
     def update(self):
+        if not self.gameover or not self.pause:
+            now = pygame.time.get_ticks()
+            
+            if now - self.last_move_time >= self.move_delay:
+                self.env.step(self.pending_action)
+                self.pending_action = None
+                self.last_move_time = now
+            self.score = self.env.score
+            self.gameover = self.env.game_over
         # self.score += self.snake.move(self.fruits)  # Update snake position
         # if not self.board.contains(self.snake.rect) or self.snake.get_size() <= 0 or self.snake.body[0] in self.snake.body[1:]:
         #     self.gameover=True

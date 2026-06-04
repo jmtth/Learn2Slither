@@ -103,10 +103,25 @@ class Snake:
         tail = self.body[-1]
         self.body.append(tail)  # Add a new segment at the tail position
 
+    def shrink(self):
+        self.body.pop()
+
     def change_direction(self, new_direction):
         # Prevent the snake from reversing on itself
         if (new_direction[0] * -1, new_direction[1] * -1) != self.direction:
             self.direction = new_direction
+
+    def set_direction(self, action):
+        match action:
+            case "UP":
+                self.change_direction((0, -1))
+            case "DOWN":
+                self.change_direction((0, 1))
+            case "LEFT":
+                self.change_direction((-1, 0))
+            case "RIGHT":
+                self.change_direction((1, 0))
+
 
     def get_size(self):
         return len(self.body)

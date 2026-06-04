@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+import const as c
 
 
 @dataclass
@@ -15,7 +16,8 @@ class RenderConfig:
     game_height: int = 600
     show_grid: bool = True
     show_vision: bool = False
-    fps: int = 5
+    fps: int = c.FPS_OPTIONS[0]
+    ms: int = c.MS_OPTIONS[0]
 
 
 @dataclass

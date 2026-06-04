@@ -15,11 +15,11 @@ class GameSettings(Scene):
 
     @property
     def speed(self):
-        return self.app.config.render.fps
+        return self.app.config.render.ms
 
     @speed.setter
     def speed(self, value):
-        self.app.config.render.fps = value
+        self.app.config.render.ms = value
 
     @property
     def screen_width(self):
@@ -47,11 +47,11 @@ class GameSettings(Scene):
                 self.nb_cells = c.CELLS_OPTIONS[self.nb_cells_index]
             if event.key == pygame.K_UP:
                 self.speed_index = min(
-                    len(c.FPS_OPTIONS) - 1, self.speed_index + 1)
-                self.speed = c.FPS_OPTIONS[self.speed_index]
+                    len(c.MS_OPTIONS) - 1, self.speed_index + 1)
+                self.speed = c.MS_OPTIONS[self.speed_index]
             if event.key == pygame.K_DOWN:
                 self.speed_index = max(0, self.speed_index - 1)
-                self.speed = c.FPS_OPTIONS[self.speed_index]
+                self.speed = c.MS_OPTIONS[self.speed_index]
             if event.key == pygame.K_ESCAPE:
                 from scenes.mainmenu_scene import MainMenuScene
                 self.app.change_scene(MainMenuScene(self.app))
