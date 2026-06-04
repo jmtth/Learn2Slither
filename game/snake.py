@@ -10,6 +10,7 @@ class Snake:
         self.nb_cells = config.nb_cells
         position = [random.randrange(config.nb_cells),
                     random.randrange(config.nb_cells)]
+
         self.make_body(position)
         # Debug print to check initial body positions
         print(f"Initial snake body: {self.body}")
@@ -25,9 +26,14 @@ class Snake:
             elif down or (self.nb_cells - 1 - pos_y > self.size):
                 down = True
                 pos_x = self.body[-1][0]
-                self.body.append((pos_x, pos_y + nb_blocks))
+                self.body.append((pos_x, pos_y + 1))
+                pos_y = self.body[-1][1]
+                nb_blocks = nb_blocks + 1
             else:
-                self.body.append((pos_x, pos_y - nb_blocks))
+                pos_x = self.body[-1][0]
+                self.body.append((pos_x, pos_y - 1))
+                nb_blocks = nb_blocks + 1
+                pos_y = self.body[-1][1]
 
     def move(self, fruits):
         pass
