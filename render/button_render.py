@@ -2,7 +2,11 @@ import pygame
 
 
 class Button:
-    def __init__(self, x, y, w, h, text, callback, font, base_color, hover_color, click_color=None):
+    def __init__(self,
+                 x, y, w, h,
+                 text,
+                 callback,
+                 font, base_color, hover_color, click_color=None):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.callback = callback

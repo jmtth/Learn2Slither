@@ -50,4 +50,3 @@ class SnakeEnv:
 
     def check_collision(self):
         pass
-

@@ -59,7 +59,9 @@ class GameRender:
             pygame.draw.rect(
                 screen,
                 c.BLUE,
-                (segment[0]*cell_size, segment[1]*cell_size, cell_size, cell_size)
+                (segment[0]*cell_size,
+                 segment[1]*cell_size,
+                 cell_size, cell_size)
             )
 
     def draw_fruits(self, screen, fruits):
@@ -68,7 +70,9 @@ class GameRender:
             pygame.draw.rect(
                 screen,
                 fruit.color,
-                (fruit.position[0]*cell_size, fruit.position[1]*cell_size, cell_size, cell_size)
+                (fruit.position[0]*cell_size,
+                 fruit.position[1]*cell_size,
+                 cell_size, cell_size)
             )
 
     # def draw_menu(self):
@@ -80,7 +84,9 @@ class GameRender:
     #     pygame.draw.line(self.screen, c.MENU_TEXT_COLOR, (0, pos_menu[1] + c.MENU_FONT_SIZE), (c.GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)  # Draw horizontal separator line
     #     # Draw menu text here using c.MENU_TEXT_COLOR and c.MENU_FONT_SIZE
     #     menu_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
-    #     value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
+    #     value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)    position = [random.randrange(config.nb_cells),
+                    random.randrange(config.nb_cells)]
+
     #     marge = (10,10)
         
     #     # Draw Score

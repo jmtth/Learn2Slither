@@ -80,4 +80,3 @@ class GameSettings(Scene):
             txt = self.font_instructions.render(line, True, (180, 180, 180))
             screen.blit(txt, txt.get_rect(
                 center=(self.screen_width // 2, 250 + i * 30)))
-
