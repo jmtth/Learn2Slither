@@ -1,5 +1,4 @@
 import const as c
-import pygame
 
 
 class Snake:
@@ -8,15 +7,15 @@ class Snake:
         self.direction = (-1, 0)  # Initial direction: moving right
         self.speed = speed
         self.size = size
-        self.rect = pygame.Rect(initial_position[0], initial_position[1], c.CELL_SIZE, c.CELL_SIZE)
-        self.body = [(initial_position[0] + c.CELL_SIZE*i, initial_position[1]) for i in range(size)]  # Initialize the body with the initial position
+        #self.rect = pygame.Rect(initial_position[0], initial_position[1], c.CELL_SIZE, c.CELL_SIZE)
+        self.body = [(initial_position[0], initial_position[1]) for i in range(size)]  # Initialize the body with the initial position
         print(f"Initial snake body: {self.body}")  # Debug print to check initial body positions
 
     def move(self, fruits):
         head_x, head_y = self.body[0]
-        dir_x, dir_y = self.direction[0] * c.CELL_SIZE, self.direction[1] * c.CELL_SIZE
+        dir_x, dir_y = self.direction[0] , self.direction[1]
         new_head = (head_x + dir_x, head_y + dir_y)
-        self.rect.topleft = new_head  # Update the rect position to the new head position
+       # self.rect.topleft = new_head  # Update the rect position to the new head position
         self.body.insert(0, new_head)  # Add new head to the front of the body
         growth = False
         score = 0

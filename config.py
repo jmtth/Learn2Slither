@@ -1,0 +1,31 @@
+from dataclasses import dataclass, field
+
+
+@dataclass
+class GameConfig:
+    nb_cells: int = 10
+    initial_size: int = 3
+    nb_apples: int = 3
+
+
+@dataclass
+class RenderConfig:
+    screen_width: int = 600
+    screen_height: int = 600
+    show_grid: bool = True
+    show_vision: bool = False
+    fps: int = 5
+
+
+@dataclass
+class AppConfig:
+    game: GameConfig = field(default_factory=GameConfig)
+    render: RenderConfig = field(default_factory=RenderConfig)
+
+    @property
+    def cell_size(self):
+        return self.render.screen_width // self.game.nb_cells
+
+    @property
+    def snake_pos(self):
+        return self.game.nb_cells // 2, self.game.nb_cells // 2

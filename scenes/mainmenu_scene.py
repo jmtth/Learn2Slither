@@ -1,25 +1,64 @@
 import pygame
 from scenes.scene import Scene
+from scenes.game_scene import GameScene
+from scenes.game_settings import GameSettings
 import render.button_render as button
+import const as c
 
 
 class MainMenuScene(Scene):
 
-    def __init__(self):
-        self.font = pygame.font.SysFont(None, 40)
-        self.start_button = button.Button(200, 150, 200, 60, "Start Game", self.start_game,
-                                          self.font, (0, 100, 200), (0, 150, 255))
+    def __init__(self, app):
+        self.app = app
+        self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 18)
+        self.font_title = pygame.font.Font("assets/PressStart2P-Regular.ttf", 26)
+        self.start_button = button.Button(200, 150, 200, 60,
+                                          "Start Game",
+                                          self.start_game,
+                                          self.font,
+                                          c.BLUE_BUTTON,
+                                          c.BLUE_HOVER,
+                                          c.BLUE_CLICK)
+        self.settings_button = button.Button(200, 250, 200, 60,
+                                             "Settings",
+                                             self.open_settings,
+                                             self.font,
+                                             c.BLUE_BUTTON,
+                                             c.BLUE_HOVER,
+                                             c.BLUE_CLICK)
+        self.quit_button = button.Button(200, 350, 200, 60,
+                                         "Quit",
+                                         self.quit_game,
+                                         self.font,
+                                         c.RED_BUTTON,
+                                         c.RED_HOVER,
+                                         c.RED_CLICK)
 
-    def handle_event(self, event):
-        # if event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_RETURN:
-        #         self.app.change_scene(GameScene(self.app))
+    def start_game(self):
+        # self.app.change_scene(GameScene(self.app))
         pass
+
+    def open_settings(self):
+        self.app.change_scene(GameSettings(self.app))
+        pass
+
+    def quit_game(self):
+        self.app.running = False
+
+    def handle_event(self, events):
+        self.start_button.handle_event(events)
+        self.settings_button.handle_event(events)
+        self.quit_button.handle_event(events)
+
 
     def update(self):
         pass
 
     def draw(self, screen):
-        screen.fill((20, 20, 30))
+        title = self.font_title.render("GAME SETTINGS", True, c.GREEN)
+        screen.blit(title, title.get_rect(center=(c.SCREEN_SIZE[0] // 2, 80)))
         self.start_button.draw(screen)
+        self.settings_button.draw(screen)
+        self.quit_button.draw(screen)
+
         # draw title, buttons, etc.

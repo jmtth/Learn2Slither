@@ -2,15 +2,15 @@ from abc import ABC, abstractmethod
 
 
 class Scene(ABC):
-    def __init__(self, game):
-        self.game = game
+    def __init__(self, app):
+        self.app = app
 
     @abstractmethod
-    def handle_event(self, event):
+    def handle_event(self, events):
         pass
 
     @abstractmethod
-    def update(self, dt):
+    def update(self):
         pass
 
     @abstractmethod

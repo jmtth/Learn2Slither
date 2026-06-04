@@ -1,18 +1,25 @@
 import pygame
 # from scenes.game_scene import GameScene
 from scenes.mainmenu_scene import MainMenuScene
-import const as c
+from config import AppConfig
 
 
-class Game:
+class App:
     def __init__(self):
+        self.config = AppConfig()
         pygame.init()
         pygame.display.set_caption('Learn2Slither Snake')
-        self.screen = pygame.display.set_mode((c.SCREEN_SIZE[0], c.SCREEN_SIZE[1]))
+        self.screen = pygame.display.set_mode(
+            (self.config.render.screen_width,
+             self.config.render.screen_height))
         self.clock = pygame.time.Clock()
         self.running = True
         self.pause = True
         self.scene = MainMenuScene(self)
+        self.gameover = False
+        self.score = 0
+        # self.snake_size = self.snake.get_size() 
+        self.pause = True
 
     def change_scene(self, scene):
         self.scene = scene
@@ -30,9 +37,8 @@ class Game:
 
             pygame.display.flip()
 
-        pygame.quit()
-
 
 if __name__ == "__main__":
-    game = Game()
+    game = App()
     game.run()
+    pygame.quit()
