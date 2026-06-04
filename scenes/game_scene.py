@@ -88,12 +88,3 @@ class GameScene(Scene):
 
     def draw(self, screen):
         self.renderer.draw(screen, self.env)
-       
-
-
-
-if __name__ == "__main__":
-    pygame.init()
-    game = Game()
-    game.run()
-    pygame.quit()

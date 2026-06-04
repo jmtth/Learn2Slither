@@ -84,9 +84,7 @@ class GameRender:
     #     pygame.draw.line(self.screen, c.MENU_TEXT_COLOR, (0, pos_menu[1] + c.MENU_FONT_SIZE), (c.GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)  # Draw horizontal separator line
     #     # Draw menu text here using c.MENU_TEXT_COLOR and c.MENU_FONT_SIZE
     #     menu_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
-    #     value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)    position = [random.randrange(config.nb_cells),
-                    random.randrange(config.nb_cells)]
-
+    #     value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
     #     marge = (10,10)
         
     #     # Draw Score

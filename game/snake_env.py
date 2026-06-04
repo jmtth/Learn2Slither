@@ -24,6 +24,11 @@ class SnakeEnv:
                 self.spawn_fruit(c.GREEN)
 
     def step(self, action):
+        self.snake.set_direction(action)
+        self.snake.move()
+        self.check_fruit_collision()
+        self.check_wall_collision()
+        self.check_self_collision()
         pass
 
     def get_state(self):
