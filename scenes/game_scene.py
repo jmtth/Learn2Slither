@@ -16,22 +16,28 @@ class GameScene(Scene):
         self.pause = True
         self.env = SnakeEnv(app.config.game)
         self.renderer = GameRender(app.config)
+        self.controller = HumanController()
         self.last_move_time = 0
         self.move_delay = app.config.render.ms
 
     def handle_event(self, event):
+        action = self.controller.handle_event(event)
+
+        if action is not None:
+            self.pending_action = action
+
         if event.type == pygame.QUIT:
             self.running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                self.pending_action = "UP"
-            elif event.key == pygame.K_DOWN:
-                self.pending_action = "DOWN"
-            elif event.key == pygame.K_LEFT:
-                self.pending_action = "LEFT"
-            elif event.key == pygame.K_RIGHT:
-                self.pending_action = "RIGHT"
-            elif event.key == pygame.K_ESCAPE: 
+            # if event.key == pygame.K_UP:
+            #     self.pending_action = "UP"
+            # elif event.key == pygame.K_DOWN:
+            #     self.pending_action = "DOWN"
+            # elif event.key == pygame.K_LEFT:
+            #     self.pending_action = "LEFT"
+            # elif event.key == pygame.K_RIGHT:
+            #     self.pending_action = "RIGHT"
+            if event.key == pygame.K_ESCAPE: 
                 from scenes.mainmenu_scene import MainMenuScene
                 self.app.change_scene(MainMenuScene(self.app))
                 self.gameover = False

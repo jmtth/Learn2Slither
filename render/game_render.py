@@ -24,7 +24,7 @@ class GameRender:
         if env.game_over and not self.gameover_show:
             self.gameover_screen(screen)
 
-        pygame.display.flip()
+        #pygame.display.flip()
 
     def draw_grid(self, screen):
         """Draws the grid lines on the game area
