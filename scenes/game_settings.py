@@ -4,7 +4,7 @@ import const as c
 
 
 class GameSettings(Scene):
-
+    """Scene for adjusting game settings like board size and speed."""
     @property
     def nb_cells(self):
         return self.app.config.game.nb_cells
@@ -64,7 +64,7 @@ class GameSettings(Scene):
         screen.fill(c.BLACK)
         speed = self.speed
         size = self.nb_cells
-        title = self.font_title.render("LEARN 2 SLITHER", True, c.GREEN)
+        title = self.font_title.render("GAME SETTINGS", True, c.GREEN)
         screen.blit(title, title.get_rect(center=(self.screen_width // 2, 80)))
         board_size_text = self.font.render(
             f"BOARD SIZE: {size}/{c.CELLS_OPTIONS[-1]}", True, (255, 255, 255))

@@ -1,41 +1,35 @@
 import pygame
 import const as c
+from render.popup_render import Popup
 
 
 class GameRender:
+    """Responsible for rendering the game state to the screen. """
     def __init__(self, config):
         self.config = config
         self.gameover_show = False
 
     def draw(self, screen, env):
+        """Draws the current game state to the screen,
+        including the grid, snake, fruits, and menu.
+
+        If the game is over, it shows the game over screen.
+        """
         if not env.game_over:
-            screen.fill(c.BG_COLOR)  # Clear screen with background color
-            self.draw_grid(screen)  # Draw the grid
-
-            # self.snake.draw(self.screen)  # Draw the snake
+            screen.fill(c.BG_COLOR)
+            self.draw_grid(screen)
             self.draw_snake(screen, env.snake)
-            self.draw_fruits(screen, env.fruits)  # Draw the fruits
-            # for fruit in self.fruits:
-            #     fruit.draw(self.screen)  # Draw each fruit
-            self.draw_menu(screen, env.score, env.snake.get_size())  # Draw the menu
+            self.draw_fruits(screen, env.fruits)
+            self.draw_menu(screen, env.score, env.snake.get_size())
         if env.game_over and not self.gameover_show:
-            self.gameover_screen(screen)  # Show game over screen
+            self.gameover_screen(screen)
 
-    #    self.draw_grid(screen)
-
-    #     self.draw_snake(screen, env.snake)
-
-    #     self.draw_fruits(screen, env.fruits)
-
-    #     self.draw_score(screen, env.score)
-
-    #     if self.config.show_vision:
-    #         self.draw_vision(screen, env.vision())
-
-        # Draw game elements here
-        pygame.display.flip()  # Update the display
+        pygame.display.flip()
 
     def draw_grid(self, screen):
+        """Draws the grid lines on the game area
+        based on the number of cells and cell size.
+        """
         nb_cells = self.config.game.nb_cells
         cell_size = self.config.cell_size
         for x in range(0, (nb_cells + 1) * cell_size, cell_size):
@@ -56,6 +50,9 @@ class GameRender:
             )
 
     def draw_snake(self, screen, snake):
+        """Draws the snake on the screen by
+        iterating through its body segments.
+        """
         cell_size = self.config.cell_size
         for segment in snake.body:
             pygame.draw.rect(
@@ -67,6 +64,9 @@ class GameRender:
             )
 
     def draw_fruits(self, screen, fruits):
+        """Draws the fruits on the screen by
+        iterating through the list of fruits.
+        """
         cell_size = self.config.cell_size
         for fruit in fruits:
             pygame.draw.rect(
@@ -78,19 +78,25 @@ class GameRender:
             )
 
     def draw_menu(self, screen, score, size):
+        """Draws the menu area below the game area,
+        displaying the current score and snake length.
+        """
         GAME_WIDTH = self.config.render.screen_width
         GAME_HEIGHT = self.config.render.game_height
         pos_menu = (0, GAME_HEIGHT)
         menu_rect = pygame.Rect(0, pos_menu[1], GAME_WIDTH, c.MENU_HEIGHT)
         pygame.draw.rect(screen, c.MENU_COLOR, menu_rect)
-        pygame.draw.rect(screen, c.MENU_TEXT_COLOR, menu_rect, 4)  # Draw border
-        pygame.draw.line(screen, c.MENU_TEXT_COLOR, (GAME_WIDTH // 2, pos_menu[1]), (GAME_WIDTH // 2, pos_menu[1] + c.MENU_HEIGHT), 2)  # Draw separator line
-        pygame.draw.line(screen, c.MENU_TEXT_COLOR, (0, pos_menu[1] + c.MENU_FONT_SIZE), (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)  # Draw horizontal separator line
-        # Draw menu text here using c.MENU_TEXT_COLOR and c.MENU_FONT_SIZE
+        pygame.draw.rect(screen, c.MENU_TEXT_COLOR, menu_rect, 4)
+        pygame.draw.line(screen, c.MENU_TEXT_COLOR,
+                         (GAME_WIDTH // 2, pos_menu[1]),
+                         (GAME_WIDTH // 2, pos_menu[1] + c.MENU_HEIGHT), 2)
+        pygame.draw.line(screen, c.MENU_TEXT_COLOR,
+                         (0, pos_menu[1] + c.MENU_FONT_SIZE),
+                         (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)
         menu_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
         value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
-        marge = (10,10)
-        
+        marge = (10, 10)
+
         # Draw Score
         score_text = menu_font.render("Score:", True, c.MENU_TEXT_COLOR)
         score_text_height = score_text.get_height() + 10 + marge[1]
@@ -117,14 +123,20 @@ class GameRender:
         screen.blit(length_value_text, (x, y))
 
     def gameover_screen(self, screen):
+        """ Displays the game over screen with a message
+        when the game is over.
+        """
         self.gameover_show = True
-        GAME_WIDTH = self.config.render.screen_width
-        GAME_HEIGHT = self.config.render.game_height
-        gameover_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
-        gameover_text = gameover_font.render("Game Over!", True, c.RED)
-        x = (GAME_WIDTH - gameover_text.get_width()) // 2
-        y = (GAME_HEIGHT - gameover_text.get_height()) // 2
-        screen.blit(gameover_text, (x, y))
-        pygame.display.flip()  # Update the display to show the game over message
+        # GAME_WIDTH = self.config.render.screen_width
+        # GAME_HEIGHT = self.config.render.game_height
+        gameover_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
+        # gameover_text = gameover_font.render("Game Over!", True, c.RED)
+        # x = (GAME_WIDTH - gameover_text.get_width()) // 2
+        # y = (GAME_HEIGHT - gameover_text.get_height()) // 2
+        # screen.blit(gameover_text, (x, y))
+        # pygame.display.flip()
+        popup = Popup("Game Over!\n\nThanks for playing.", gameover_font, self.config, 400, 150)
+        popup.show()
+        popup.draw(screen)
         print("Game Over! Thanks for playing.")
-        self.gameover = True  # Set game over flag
+        self.gameover = True

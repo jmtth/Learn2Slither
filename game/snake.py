@@ -3,6 +3,7 @@ import random
 
 
 class Snake:
+    """Represents the snake in the game."""
     def __init__(self, config):
         self.body = []
         self.direction = (-1, 0)  # Initial direction: moving right
@@ -10,12 +11,14 @@ class Snake:
         self.nb_cells = config.nb_cells
         position = [random.randrange(config.nb_cells),
                     random.randrange(config.nb_cells)]
-
         self.make_body(position)
         # Debug print to check initial body positions
         print(f"Initial snake body: {self.body}")
 
     def make_body(self, position):
+        """Initializes the snake's body based
+        on the initial position and size.
+        """
         pos_x, pos_y = position
         nb_blocks = 0
         down = False
@@ -36,12 +39,14 @@ class Snake:
                 pos_y = self.body[-1][1]
 
     def move(self):
+        """Moves the snake in the current direction by adding a new head
+        in the direction of movement and removing the tail segment.
+        """
         head_x, head_y = self.body[0]
         dir_x, dir_y = self.direction[0], self.direction[1]
         new_head = (head_x + dir_x, head_y + dir_y)
         self.body.insert(0, new_head)  # Add new head to the front of the body
         self.body.pop()  # Remove the tail
-
 
     def vision(self, fruits):
         pass
@@ -100,18 +105,26 @@ class Snake:
         # return vision_data
 
     def grow(self):
+        """Adds a new segment to the snake's body
+        at the position of the current tail.
+        """
         tail = self.body[-1]
-        self.body.append(tail)  # Add a new segment at the tail position
+        self.body.append(tail)
 
     def shrink(self):
+        """Removes the last segment from the snake's body."""
         self.body.pop()
 
     def change_direction(self, new_direction):
+        """Changes the snake's direction if the new direction
+        is not directly opposite to the current direction.
+        """
         # Prevent the snake from reversing on itself
         if (new_direction[0] * -1, new_direction[1] * -1) != self.direction:
             self.direction = new_direction
 
     def set_direction(self, action):
+        """Sets the snake's direction based on the given action."""
         match action:
             case "UP":
                 self.change_direction((0, -1))
@@ -121,7 +134,6 @@ class Snake:
                 self.change_direction((-1, 0))
             case "RIGHT":
                 self.change_direction((1, 0))
-
 
     def get_size(self):
         return len(self.body)

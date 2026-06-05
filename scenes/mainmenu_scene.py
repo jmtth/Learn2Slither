@@ -58,7 +58,7 @@ class MainMenuScene(Scene):
     def draw(self, screen):
         pygame.display.set_caption('Learn2Slither Snake: Main Menu')
         screen.fill(c.BLACK)
-        title = self.font_title.render("GAME SETTINGS", True, c.GREEN)
+        title = self.font_title.render("MAIN MENU", True, c.GREEN)
         screen.blit(title, title.get_rect(
             center=(self.app.config.render.screen_width // 2, 80)))
         self.start_button.draw(screen)
