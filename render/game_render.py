@@ -103,11 +103,12 @@ class GameRender:
         x = (GAME_WIDTH // 2 - score_text.get_width()) // 2
         screen.blit(score_text, (x, pos_menu[1] + marge[1]))
 
-        score_value_text = value_font.render(f"{score}", True, c.CYAN)
+        score_value_text = value_font.render(f"{score}", True, c.GREEN)
         x = (GAME_WIDTH // 2 - score_value_text.get_width()) // 2
         y = pos_menu[1] + marge[1] + score_text.get_height() + 10
         score_space = c.MENU_HEIGHT - score_text_height
-        y = pos_menu[1] + score_text_height + score_space // 2 - score_value_text.get_height() // 2
+        y = pos_menu[1] + score_text_height + score_space // 2
+        y = y - score_value_text.get_height() // 2
         screen.blit(score_value_text, (x, y))
 
         # Draw Snake Length
@@ -115,11 +116,13 @@ class GameRender:
         x = GAME_WIDTH // 2 + (GAME_WIDTH // 2 - length_text.get_width()) // 2
         screen.blit(length_text, (x, pos_menu[1] + marge[1]))
 
-        length_value_text = value_font.render(f"{size}", True, c.CYAN)
-        x = GAME_WIDTH // 2 + (GAME_WIDTH // 2 - length_value_text.get_width()) // 2
+        length_value_text = value_font.render(f"{size}", True, c.GREEN)
+        x = GAME_WIDTH // 2 
+        x = x + (GAME_WIDTH // 2 - length_value_text.get_width()) // 2
         y = pos_menu[1] + marge[1] + length_text.get_height() + 10
         length_space = c.MENU_HEIGHT - (length_text.get_height() + 10 + marge[1])
-        y = pos_menu[1] + length_text.get_height() + 10 + marge[1] + length_space // 2 - length_value_text.get_height() // 2
+        y = pos_menu[1] + length_text.get_height() + 10 + marge[1]
+        y = y + length_space // 2 - length_value_text.get_height() // 2
         screen.blit(length_value_text, (x, y))
 
     def gameover_screen(self, screen):

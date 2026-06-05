@@ -13,22 +13,25 @@ class MainMenuScene(Scene):
         self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 18)
         self.font_title = pygame.font.Font(
             "assets/PressStart2P-Regular.ttf", 26)
+        
+        pos_x = (self.app.config.render.screen_width - 200) // 2
+        pos_y = 250
 
-        self.start_button = button.Button(200, 150, 200, 60,
+        self.start_button = button.Button(pos_x, pos_y, 200, 60,
                                           "Start Game",
                                           self.start_game,
                                           self.font,
                                           c.BLUE_BUTTON,
                                           c.BLUE_HOVER,
                                           c.BLUE_CLICK)
-        self.settings_button = button.Button(200, 250, 200, 60,
+        self.settings_button = button.Button(pos_x, pos_y + 150, 200, 60,
                                              "Settings",
                                              self.open_settings,
                                              self.font,
                                              c.BLUE_BUTTON,
                                              c.BLUE_HOVER,
                                              c.BLUE_CLICK)
-        self.quit_button = button.Button(200, 350, 200, 60,
+        self.quit_button = button.Button(pos_x, pos_y + 300, 200, 60,
                                          "Quit",
                                          self.quit_game,
                                          self.font,
@@ -60,7 +63,7 @@ class MainMenuScene(Scene):
         screen.fill(c.BLACK)
         title = self.font_title.render("MAIN MENU", True, c.GREEN)
         screen.blit(title, title.get_rect(
-            center=(self.app.config.render.screen_width // 2, 80)))
+            center=(self.app.config.render.screen_width // 2, 100)))
         self.start_button.draw(screen)
         self.settings_button.draw(screen)
         self.quit_button.draw(screen)
