@@ -24,8 +24,6 @@ class GameRender:
         if env.game_over and not self.gameover_show:
             self.gameover_screen(screen)
 
-        #pygame.display.flip()
-
     def draw_grid(self, screen):
         """Draws the grid lines on the game area
         based on the number of cells and cell size.
@@ -117,10 +115,11 @@ class GameRender:
         screen.blit(length_text, (x, pos_menu[1] + marge[1]))
 
         length_value_text = value_font.render(f"{size}", True, c.GREEN)
-        x = GAME_WIDTH // 2 
+        x = GAME_WIDTH // 2
         x = x + (GAME_WIDTH // 2 - length_value_text.get_width()) // 2
         y = pos_menu[1] + marge[1] + length_text.get_height() + 10
-        length_space = c.MENU_HEIGHT - (length_text.get_height() + 10 + marge[1])
+        value_space = (length_text.get_height() + 10 + marge[1])
+        length_space = c.MENU_HEIGHT - value_space
         y = pos_menu[1] + length_text.get_height() + 10 + marge[1]
         y = y + length_space // 2 - length_value_text.get_height() // 2
         screen.blit(length_value_text, (x, y))
@@ -138,7 +137,10 @@ class GameRender:
         # y = (GAME_HEIGHT - gameover_text.get_height()) // 2
         # screen.blit(gameover_text, (x, y))
         # pygame.display.flip()
-        popup = Popup("Game Over!\n\nThanks for playing.", gameover_font, self.config, 400, 150)
+        popup = Popup("Game Over!\n\nThanks for playing.",
+                      gameover_font,
+                      self.config,
+                      400, 150)
         popup.show()
         popup.draw(screen)
         print("Game Over! Thanks for playing.")
