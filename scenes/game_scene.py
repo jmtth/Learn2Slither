@@ -10,11 +10,10 @@ class GameScene(Scene):
     """Main game scene where the snake game is played. """
     def __init__(self, app):
         super().__init__(app)
-        self.gameover = False
         self.pending_action = None
-        self.score = 0
-        self.pause = True
         self.env = SnakeEnv(app.config.game)
+        self.gameover = self.env.game_over
+        self.pause = self.env.paused
         self.renderer = GameRender(app.config)
         self.controller = HumanController()
         self.last_move_time = 0
@@ -37,23 +36,21 @@ class GameScene(Scene):
             #     self.pending_action = "LEFT"
             # elif event.key == pygame.K_RIGHT:
             #     self.pending_action = "RIGHT"
-            if event.key == pygame.K_ESCAPE: 
+            if event.key == pygame.K_ESCAPE:
                 from scenes.mainmenu_scene import MainMenuScene
                 self.app.change_scene(MainMenuScene(self.app))
-                self.gameover = False
-                self.score = 0
             elif event.key == pygame.K_p:
                 self.pause = not self.pause
+                self.env.paused = self.pause
 
     def update(self):
-        if not self.gameover or not self.pause:
+        if not self.gameover and not self.pause:
             now = pygame.time.get_ticks()
 
             if now - self.last_move_time >= self.move_delay:
                 self.env.step(self.pending_action)
                 self.pending_action = None
                 self.last_move_time = now
-            self.score = self.env.score
             self.gameover = self.env.game_over
 
     def draw(self, screen):

@@ -15,7 +15,9 @@ class SnakeEnv:
         """Resets the game environment to the initial state."""
         self.snake = Snake(self.config)
         self.fruits = []
-        self.score = 0
+        self.green_apples_eaten = 0
+        self.red_apples_eaten = 0
+        self.move_count = 0
         self.game_over = False
         self.paused = False
         for i in range(self.config.nb_apples):
@@ -32,7 +34,7 @@ class SnakeEnv:
         self.check_wall_collision()
         self.check_self_collision()
         self.check_fruit_collision()
-        pass
+        self.move_count += 1
 
     def get_state(self):
         pass
@@ -69,9 +71,9 @@ class SnakeEnv:
                 self.fruits.remove(fruit)
                 if fruit.color == c.GREEN:
                     self.snake.grow()
-                    self.score += 1
+                    self.green_apples_eaten += 1
                 else:
-                    self.score += -1
+                    self.red_apples_eaten += 1
                     self.snake.shrink()
                     if self.snake.get_size() <= 0:
                         self.game_over = True

@@ -38,6 +38,10 @@ class MainMenuScene(Scene):
                                          c.RED_BUTTON,
                                          c.RED_HOVER,
                                          c.RED_CLICK)
+        
+        self.buttons = [self.start_button, self.settings_button, self.quit_button]
+        self.buttons_index = 0
+        self.start_button.hovered = True
 
     def start_game(self):
         self.app.change_scene(GameScene(self.app))
@@ -51,9 +55,26 @@ class MainMenuScene(Scene):
         self.app.running = False
 
     def handle_event(self, event):
-        self.start_button.handle_event(event)
-        self.settings_button.handle_event(event)
-        self.quit_button.handle_event(event)
+        for but in self.buttons:
+            but.handle_event(event)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                self.buttons[self.buttons_index].hovered = False
+                self.buttons_index = (self.buttons_index - 1) % len(self.buttons)
+                self.buttons[self.buttons_index].hovered = True
+            elif event.key == pygame.K_DOWN:
+                self.buttons[self.buttons_index].hovered = False
+                self.buttons_index = (self.buttons_index + 1) % len(self.buttons)
+                self.buttons[self.buttons_index].hovered = True
+            elif event.key == pygame.K_RETURN:
+                if self.start_button.hovered:
+                    self.start_game()
+                elif self.settings_button.hovered:
+                    self.open_settings()
+                elif self.quit_button.hovered:
+                    self.quit_game()
+            elif event.key == pygame.K_ESCAPE:
+                self.quit_game()
 
     def update(self):
         pass

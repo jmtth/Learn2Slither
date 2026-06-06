@@ -7,7 +7,8 @@ class GameRender:
     """Responsible for rendering the game state to the screen. """
     def __init__(self, config):
         self.config = config
-        self.gameover_show = False
+        self.gameover_shown = False
+        self.pause_shown = False
 
     def draw(self, screen, env):
         """Draws the current game state to the screen,
@@ -15,14 +16,18 @@ class GameRender:
 
         If the game is over, it shows the game over screen.
         """
-        if not env.game_over:
+        if not env.game_over and not env.paused:
+            self.pause_shown = False
             screen.fill(c.BG_COLOR)
             self.draw_grid(screen)
             self.draw_snake(screen, env.snake)
             self.draw_fruits(screen, env.fruits)
-            self.draw_menu(screen, env.score, env.snake.get_size())
-        if env.game_over and not self.gameover_show:
+            self.draw_menu(screen, env.move_count, env.snake.get_size())
+        if env.game_over and not self.gameover_shown:
             self.gameover_screen(screen)
+            return
+        if env.paused and not self.pause_shown:
+            self.draw_pause(screen)
 
     def draw_grid(self, screen):
         """Draws the grid lines on the game area
@@ -75,7 +80,7 @@ class GameRender:
                  cell_size, cell_size)
             )
 
-    def draw_menu(self, screen, score, size):
+    def draw_menu(self, screen, moves, size):
         """Draws the menu area below the game area,
         displaying the current score and snake length.
         """
@@ -95,19 +100,19 @@ class GameRender:
         value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
         marge = (10, 10)
 
-        # Draw Score
-        score_text = menu_font.render("Score:", True, c.MENU_TEXT_COLOR)
-        score_text_height = score_text.get_height() + 10 + marge[1]
-        x = (GAME_WIDTH // 2 - score_text.get_width()) // 2
-        screen.blit(score_text, (x, pos_menu[1] + marge[1]))
+        # Draw Cells Count
+        cells_text = menu_font.render("MOVES:", True, c.MENU_TEXT_COLOR)
+        cells_text_height = cells_text.get_height() + 10 + marge[1]
+        x = (GAME_WIDTH // 2 - cells_text.get_width()) // 2
+        screen.blit(cells_text, (x, pos_menu[1] + marge[1]))
 
-        score_value_text = value_font.render(f"{score}", True, c.GREEN)
-        x = (GAME_WIDTH // 2 - score_value_text.get_width()) // 2
-        y = pos_menu[1] + marge[1] + score_text.get_height() + 10
-        score_space = c.MENU_HEIGHT - score_text_height
-        y = pos_menu[1] + score_text_height + score_space // 2
-        y = y - score_value_text.get_height() // 2
-        screen.blit(score_value_text, (x, y))
+        cells_value_text = value_font.render(f"{moves}", True, c.GREEN)
+        x = (GAME_WIDTH // 2 - cells_value_text.get_width()) // 2
+        y = pos_menu[1] + marge[1] + cells_text.get_height() + 10
+        cells_space = c.MENU_HEIGHT - cells_text_height
+        y = pos_menu[1] + cells_text_height + cells_space // 2
+        y = y - cells_value_text.get_height() // 2
+        screen.blit(cells_value_text, (x, y))
 
         # Draw Snake Length
         length_text = menu_font.render("Length:", True, c.MENU_TEXT_COLOR)
@@ -128,7 +133,7 @@ class GameRender:
         """ Displays the game over screen with a message
         when the game is over.
         """
-        self.gameover_show = True
+        self.gameover_shown = True
         # GAME_WIDTH = self.config.render.screen_width
         # GAME_HEIGHT = self.config.render.game_height
         gameover_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
@@ -145,3 +150,18 @@ class GameRender:
         popup.draw(screen)
         print("Game Over! Thanks for playing.")
         self.gameover = True
+
+    def draw_pause(self, screen):
+        """ Displays the pause screen with a message
+        when the game is paused.
+        """
+        self.pause_shown = True
+        pause_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
+        popup = Popup("Game Paused\n\nPress P to resume",
+                      pause_font,
+                      self.config,
+                      400, 150)
+        popup.show()
+        popup.draw(screen)
+        print("Game Paused. Press P to resume.")
+        self.pause = True
