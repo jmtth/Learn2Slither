@@ -4,6 +4,9 @@ from scenes.scene import Scene
 from render.game_render import GameRender
 from game.snake_env import SnakeEnv
 from controllers.human_controller import HumanController
+import csv
+import datetime
+import os
 
 
 class GameScene(Scene):
@@ -18,6 +21,7 @@ class GameScene(Scene):
         self.controller = HumanController()
         self.last_move_time = 0
         self.move_delay = app.config.render.ms
+        self.start_time = pygame.time.get_ticks()
 
     def handle_event(self, event):
         action = self.controller.handle_event(event)
@@ -46,12 +50,25 @@ class GameScene(Scene):
     def update(self):
         if not self.gameover and not self.pause:
             now = pygame.time.get_ticks()
+            launch_time = now - self.start_time
 
-            if now - self.last_move_time >= self.move_delay:
+            if launch_time > 2000 and now - self.last_move_time >= self.move_delay:
                 self.env.step(self.pending_action)
                 self.pending_action = None
                 self.last_move_time = now
             self.gameover = self.env.game_over
+            if self.gameover:
+                self.save_score()
 
     def draw(self, screen):
         self.renderer.draw(screen, self.env)
+
+    def save_score(self):
+        if not os.path.exists('scores.csv'):
+            with open('scores.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Player", "Date", "Moves", "Length", "Green Apples", "Red Apples"])
+        with open('scores.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            writer.writerow(["Human", date, self.env.move_count, self.env.snake.get_size(), self.env.green_apples_eaten, self.env.red_apples_eaten])

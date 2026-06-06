@@ -22,9 +22,10 @@ class GameRender:
             self.draw_grid(screen)
             self.draw_snake(screen, env.snake)
             self.draw_fruits(screen, env.fruits)
-            self.draw_menu(screen, env.move_count, env.snake.get_size())
+            self.draw_menu(screen, env)
         if env.game_over and not self.gameover_shown:
             self.gameover_screen(screen)
+            self.draw_menu(screen, env)
             return
         if env.paused and not self.pause_shown:
             self.draw_pause(screen)
@@ -80,54 +81,104 @@ class GameRender:
                  cell_size, cell_size)
             )
 
-    def draw_menu(self, screen, moves, size):
+    def draw_menu(self, screen, env):
         """Draws the menu area below the game area,
         displaying the current score and snake length.
         """
         GAME_WIDTH = self.config.render.screen_width
         GAME_HEIGHT = self.config.render.game_height
+        margin = 3
         pos_menu = (0, GAME_HEIGHT)
+        pos_x_col2 = GAME_WIDTH // 4
+        pos_x_col3 = 2 * GAME_WIDTH // 4
+        pos_x_col4 = 3 * GAME_WIDTH // 4
+        pos_y_row2 = pos_menu[1] + c.MENU_FONT_SIZE
+        col_width = GAME_WIDTH // 4
+        row_height = c.MENU_FONT_SIZE
+        moves, size = env.move_count, env.snake.get_size()
+        green_count = env.green_apples_eaten
+        red_count = env.red_apples_eaten
         menu_rect = pygame.Rect(0, pos_menu[1], GAME_WIDTH, c.MENU_HEIGHT)
         pygame.draw.rect(screen, c.MENU_COLOR, menu_rect)
         pygame.draw.rect(screen, c.MENU_TEXT_COLOR, menu_rect, 4)
+        # Vertical line separating the left and right sections of the menu
         pygame.draw.line(screen, c.MENU_TEXT_COLOR,
                          (GAME_WIDTH // 2, pos_menu[1]),
                          (GAME_WIDTH // 2, pos_menu[1] + c.MENU_HEIGHT), 2)
+        # Horizontal line separating the header sections of the menu
         pygame.draw.line(screen, c.MENU_TEXT_COLOR,
                          (0, pos_menu[1] + c.MENU_FONT_SIZE),
                          (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)
-        menu_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
-        value_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE*2)
-        marge = (10, 10)
+        # Vertical lines separating moves and length sections
+        pygame.draw.line(screen, c.MENU_TEXT_COLOR,
+                         (GAME_WIDTH // 4, pos_menu[1]),
+                         (GAME_WIDTH // 4, pos_menu[1] + c.MENU_HEIGHT), 2)
+        # Vertical line separating green and red apples sections
+        pygame.draw.line(screen, c.MENU_TEXT_COLOR,
+                         (3 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_FONT_SIZE),
+                         (3 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_HEIGHT), 2)
+        # Horizontal line separating the apple header from the apple counts
+        pygame.draw.line(screen, c.MENU_TEXT_COLOR,
+                         (2 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_FONT_SIZE * 2),
+                         (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE * 2), 2)
+        header_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_HEADER_SIZE)
+        value_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_VALUE_SIZE)
+        counter_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_COUNTER_SIZE)
+        
 
-        # Draw Cells Count
-        cells_text = menu_font.render("MOVES:", True, c.MENU_TEXT_COLOR)
-        cells_text_height = cells_text.get_height() + 10 + marge[1]
-        x = (GAME_WIDTH // 2 - cells_text.get_width()) // 2
-        screen.blit(cells_text, (x, pos_menu[1] + marge[1]))
+        # Draw moves Count
+        moves_text = header_font.render("MOVES", True, c.MENU_TEXT_COLOR)
+        x = (col_width - moves_text.get_width()) // 2
+        y = pos_menu[1] + (row_height - moves_text.get_height()) // 2
+        screen.blit(moves_text, (x, y + margin))
 
-        cells_value_text = value_font.render(f"{moves}", True, c.GREEN)
-        x = (GAME_WIDTH // 2 - cells_value_text.get_width()) // 2
-        y = pos_menu[1] + marge[1] + cells_text.get_height() + 10
-        cells_space = c.MENU_HEIGHT - cells_text_height
-        y = pos_menu[1] + cells_text_height + cells_space // 2
-        y = y - cells_value_text.get_height() // 2
-        screen.blit(cells_value_text, (x, y))
+        moves_value_text = value_font.render(f"{moves}", True, c.WHITE)
+        x = (col_width - moves_value_text.get_width()) // 2
+        remaining_space = c.MENU_HEIGHT - row_height
+        y = pos_menu[1] + row_height + (
+            remaining_space - moves_value_text.get_height()) // 2
+        screen.blit(moves_value_text, (x, y))
 
         # Draw Snake Length
-        length_text = menu_font.render("Length:", True, c.MENU_TEXT_COLOR)
-        x = GAME_WIDTH // 2 + (GAME_WIDTH // 2 - length_text.get_width()) // 2
-        screen.blit(length_text, (x, pos_menu[1] + marge[1]))
+        length_text = header_font.render("LENGTH", True, c.MENU_TEXT_COLOR)
+        x = GAME_WIDTH // 4 + (GAME_WIDTH // 4 - length_text.get_width()) // 2
+        x = pos_x_col2 + (col_width - length_text.get_width()) // 2
+        y = pos_menu[1] + (row_height - length_text.get_height()) // 2
+        screen.blit(length_text, (x, y + margin))
 
-        length_value_text = value_font.render(f"{size}", True, c.GREEN)
-        x = GAME_WIDTH // 2
-        x = x + (GAME_WIDTH // 2 - length_value_text.get_width()) // 2
-        y = pos_menu[1] + marge[1] + length_text.get_height() + 10
-        value_space = (length_text.get_height() + 10 + marge[1])
-        length_space = c.MENU_HEIGHT - value_space
-        y = pos_menu[1] + length_text.get_height() + 10 + marge[1]
-        y = y + length_space // 2 - length_value_text.get_height() // 2
+        length_value_text = value_font.render(f"{size}", True, c.WHITE)
+        x = pos_x_col2 + (col_width - length_value_text.get_width()) // 2
+        remaining_space = c.MENU_HEIGHT - row_height
+        y = pos_menu[1] + row_height + (
+            remaining_space - length_value_text.get_height()) // 2
         screen.blit(length_value_text, (x, y))
+
+        # Draw Snake Length
+        apples_text = header_font.render("APPLES", True, c.MENU_TEXT_COLOR)
+        x = pos_x_col3 + (col_width * 2 - apples_text.get_width()) // 2
+        y = pos_menu[1] + (row_height - apples_text.get_height()) // 2
+        screen.blit(apples_text, (x, y + margin))
+        green_apples_text = header_font.render("GREEN", True, c.MENU_TEXT_COLOR)
+        x = pos_x_col3 + (col_width - green_apples_text.get_width()) // 2
+        y = pos_y_row2 + (row_height - green_apples_text.get_height()) // 2
+        screen.blit(green_apples_text, (x, y + margin))
+        red_apples_text = header_font.render("RED", True, c.MENU_TEXT_COLOR)
+        x = pos_x_col4 + (col_width - red_apples_text.get_width()) // 2
+        screen.blit(red_apples_text, (x, y + margin))
+
+        green_apples_value_text = counter_font.render(f"{green_count}", True, c.GREEN)
+        x = pos_x_col3 + (col_width - green_apples_value_text.get_width()) // 2
+        remaining_space = c.MENU_HEIGHT - (row_height * 2)
+        y = pos_y_row2 + row_height + (
+            remaining_space - green_apples_value_text.get_height()) // 2
+        screen.blit(green_apples_value_text, (x, y))
+
+        red_apples_value_text = counter_font.render(f"{red_count}", True, c.RED)
+        x = pos_x_col4 + (col_width - red_apples_value_text.get_width()) // 2
+        remaining_space = c.MENU_HEIGHT - (row_height * 2)
+        y = pos_y_row2 + row_height + (
+            remaining_space - red_apples_value_text.get_height()) // 2
+        screen.blit(red_apples_value_text, (x, y))
 
     def gameover_screen(self, screen):
         """ Displays the game over screen with a message
