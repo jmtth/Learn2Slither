@@ -16,7 +16,7 @@ class RenderConfig:
     game_height: int = 600
     show_grid: bool = True
     show_vision: bool = False
-    fps: int = c.FPS_OPTIONS[0]
+    fps: int = c.FPS
     ms: int = c.MS_OPTIONS[0]
     step_by_step: bool = False
 

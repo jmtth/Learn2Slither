@@ -25,22 +25,45 @@ class SnakeEnv:
                 self.spawn_fruit(c.RED)
             else:
                 self.spawn_fruit(c.GREEN)
-        self.vision(self.fruits)
+        # self.vision(self.fruits)
+        self.state = self.get_state()
 
     def step(self, action=None):
         """Advances the game state by one step based on the given action."""
+        reward = 0
         if action is not None:
             self.snake.set_direction(action)
             print(f"{action}\n")
         self.snake.move()
-        self.vision(self.fruits)
-        self.check_wall_collision()
-        self.check_self_collision()
-        self.check_fruit_collision()
+        # self.vision(self.fruits)
+        self.state = self.get_state()
+        reward += self.check_wall_collision()
+        reward += self.check_self_collision()
+        reward += self.check_fruit_collision()
         self.move_count += 1
+        return self.state, reward, self.game_over
 
     def get_state(self):
-        pass
+        head_x, head_y = self.snake.body[0]
+        vision_grid = self.vision(self.fruits)
+        up_string = "".join(vision_grid[i][head_x + 1]
+                            for i in range(head_y + 1))
+        down_string = "".join(vision_grid[i][head_x + 1]
+                              for i in range(head_y + 2, len(vision_grid)))
+        left_string = "".join(vision_grid[head_y + 1][i]
+                              for i in range(head_x + 1))
+        right_string = "".join(vision_grid[head_y + 1][i]
+                               for i in range(head_x + 2, len(vision_grid[0])))
+
+        state = (
+                up_string,
+                down_string,
+                left_string,
+                right_string,
+                self.snake.direction
+            )
+        print(f"State: {state}\n")
+        return state
 
     def spawn_fruit(self, color):
         """Spawns a new fruit of the given color at a random position
@@ -69,20 +92,27 @@ class SnakeEnv:
         and updates the game state accordingly.
         """
         head_x, head_y = self.snake.body[0]
+        reward = 0
         for fruit in self.fruits:
             if fruit.position == (head_x, head_y):
                 self.fruits.remove(fruit)
                 if fruit.color == c.GREEN:
                     self.snake.grow()
                     self.green_apples_eaten += 1
+                    reward += c.GREEN_REWARD
                 else:
                     self.red_apples_eaten += 1
                     self.snake.shrink()
+                    if self.snake.get_size() <= 3:
+                        reward += c.RED_SMALL_SNAKE_REWARD
+                    else:
+                        reward += c.RED_REWARD
                     if self.snake.get_size() <= 0:
                         self.game_over = True
-                        break
+                        reward += c.DEATH_REWARD
                 self.spawn_fruit(c.GREEN if fruit.color == c.GREEN else c.RED)
-                break
+                return reward
+        return reward
 
     def check_wall_collision(self):
         """Checks if the snake's head has collided
@@ -95,12 +125,16 @@ class SnakeEnv:
             or head_y < 0 or head_y >= self.config.nb_cells
         ):
             self.game_over = True
+            return c.DEATH_REWARD
+        return 0
 
     def check_self_collision(self):
         """Checks if the snake's head has collided with its own body."""
         head = self.snake.body[0]
         if head in self.snake.body[1:]:
             self.game_over = True
+            return c.DEATH_REWARD
+        return 0
 
     def vision(self, fruits):
         """Generates a vision grid for the snake,
