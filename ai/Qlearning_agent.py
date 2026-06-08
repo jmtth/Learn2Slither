@@ -12,6 +12,7 @@ class QLearningAgent:
         self.actions = ["UP", "DOWN", "LEFT", "RIGHT"]
 
     def get_q_values(self, state):
+        # mutable variable return a ref
         if state not in self.q_table:
             self.q_table[state] = {action: 0.0 for action in self.actions}
         return self.q_table[state]
