@@ -25,17 +25,19 @@ class SnakeEnv:
                 self.spawn_fruit(c.RED)
             else:
                 self.spawn_fruit(c.GREEN)
+        self.vision(self.fruits)
 
     def step(self, action=None):
         """Advances the game state by one step based on the given action."""
         if action is not None:
             self.snake.set_direction(action)
+            print(f"{action}\n")
         self.snake.move()
+        self.vision(self.fruits)
         self.check_wall_collision()
         self.check_self_collision()
         self.check_fruit_collision()
         self.move_count += 1
-        self.vision(self.fruits)
 
     def get_state(self):
         pass

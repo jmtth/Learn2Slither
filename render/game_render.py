@@ -134,7 +134,12 @@ class GameRender:
         y = pos_menu[1] + (row_height - moves_text.get_height()) // 2
         screen.blit(moves_text, (x, y + margin))
 
-        moves_value_text = value_font.render(f"{moves}", True, c.WHITE)
+        if moves > 999:
+            coeff = 1000
+            moves_display = f"{moves / coeff:.1f}K"
+        else:
+            moves_display = str(moves)
+        moves_value_text = value_font.render(f"{moves_display}", True, c.WHITE)
         x = (col_width - moves_value_text.get_width()) // 2
         remaining_space = c.MENU_HEIGHT - row_height
         y = pos_menu[1] + row_height + (

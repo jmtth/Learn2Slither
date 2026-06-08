@@ -18,6 +18,7 @@ class RenderConfig:
     show_vision: bool = False
     fps: int = c.FPS_OPTIONS[0]
     ms: int = c.MS_OPTIONS[0]
+    step_by_step: bool = False
 
 
 @dataclass
