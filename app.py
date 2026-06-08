@@ -33,7 +33,7 @@ class App:
 
             self.scene.update()
             self.scene.draw(self.screen)
-            #self.clock.tick(self.config.render.fps)
+            # self.clock.tick(self.config.render.fps)
             pygame.display.flip()
 
 

@@ -86,7 +86,11 @@ class SnakeEnv:
         with the walls of the game area.
         """
         head_x, head_y = self.snake.body[0]
-        if head_x < 0 or head_x >= self.config.nb_cells or head_y < 0 or head_y >= self.config.nb_cells:
+        if (
+            head_x < 0
+            or head_x >= self.config.nb_cells
+            or head_y < 0 or head_y >= self.config.nb_cells
+        ):
             self.game_over = True
 
     def check_self_collision(self):

@@ -50,59 +50,62 @@ class Snake:
 
     def vision(self, fruits):
         pass
-        # head_x, head_y = self.body[0]
+        head_x, head_y = self.body[0]
 
-        # body_positions = set(self.body[1:])
-        # fruit_map = {
-        #     tuple(fruit.position): fruit
-        #     for fruit in fruits
-        # }
+        body_positions = set(self.body[1:])
+        fruit_map = {
+            tuple(fruit.position): fruit
+            for fruit in fruits
+        }
 
-        # vision_data = [
-        #     [" " for _ in range(c.NB_CELLS + 2)]
-        #     for _ in range(c.NB_CELLS + 2)
-        # ]
+        vision_data = [
+            [" " for _ in range(self.nb_cells + 2)]
+            for _ in range(self.nb_cells + 2)
+        ]
 
-        # for i in range(c.NB_CELLS+2):
-        #     for j in range(c.NB_CELLS+2):
-        #         if (
-        #             i == 0
-        #             or j == 0
-        #             or i == c.NB_CELLS + 1
-        #             or j == c.NB_CELLS + 1
-        #         ):
-        #             if (i==0 and j >0) or (i==c.NB_CELLS+1 and j > 0):
-        #                 cell_x = (j - 1) * c.CELL_SIZE
-        #                 if cell_x == head_x:
-        #                     vision_data[i][j] = "W"
-        #             if (j == 0 and i > 0) or (j==c.NB_CELLS+1 and i > 0):
-        #                 cell_y = (i - 1) * c.CELL_SIZE
-        #                 if cell_y == head_y:
-        #                     vision_data[i][j] = "W"
-        #             continue
+        for i in range(self.nb_cells + 2):
+            for j in range(self.nb_cells + 2):
+                if (
+                    i == 0
+                    or j == 0
+                    or i == self.nb_cells + 1
+                    or j == self.nb_cells + 1
+                ):
+                    if (i == 0 and j > 0) or (i == self.nb_cells+1 and j > 0):
+                        cell_x = (j - 1)
+                        if cell_x == head_x:
+                            vision_data[i][j] = "W"
+                    if (j == 0 and i > 0) or (j == self.nb_cells+1 and i > 0):
+                        cell_y = (i - 1)
+                        if cell_y == head_y:
+                            vision_data[i][j] = "W"
+                    continue
 
-        #         cell_x = (j - 1) * c.CELL_SIZE
-        #         cell_y = (i - 1) * c.CELL_SIZE
+                cell_x = (j - 1)
+                cell_y = (i - 1)
 
-        #         if cell_x == head_x or cell_y == head_y:
-        #             vision_data[i][j] = "O"
+                if cell_x == head_x or cell_y == head_y:
+                    vision_data[i][j] = "O"
 
-        #         if (cell_x, cell_y) == (head_x, head_y):
-        #             vision_data[i][j] = "H"
+                if (cell_x, cell_y) == (head_x, head_y):
+                    vision_data[i][j] = "H"
 
-        #         if (cell_x, cell_y) in body_positions and (cell_x == head_x or cell_y == head_y):
-        #             vision_data[i][j] = "S"
+                if (
+                    (cell_x, cell_y)
+                    in body_positions
+                    and (cell_x == head_x or cell_y == head_y)
+                ):
+                    vision_data[i][j] = "S"
 
-        #         if fruit := fruit_map.get((cell_x, cell_y)):
-        #             if cell_x == head_x or cell_y == head_y:
-        #                 vision_data[i][j] = (
-        #                     "G" if fruit.color == c.GREEN else "R"
-        #                 )
-
-        # for row in vision_data:
-        #     print("".join(row))
-        # print("\n")
-        # return vision_data
+                if fruit := fruit_map.get((cell_x, cell_y)):
+                    if cell_x == head_x or cell_y == head_y:
+                        vision_data[i][j] = (
+                            "G" if fruit.color == c.GREEN else "R"
+                        )
+        for row in vision_data:
+            print("".join(row))
+        print("\n")
+        return vision_data
 
     def grow(self):
         """Adds a new segment to the snake's body

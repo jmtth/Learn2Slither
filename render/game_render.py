@@ -89,11 +89,11 @@ class GameRender:
         GAME_HEIGHT = self.config.render.game_height
         margin = 3
         pos_menu = (0, GAME_HEIGHT)
-        pos_x_col2 = GAME_WIDTH // 4
-        pos_x_col3 = 2 * GAME_WIDTH // 4
-        pos_x_col4 = 3 * GAME_WIDTH // 4
-        pos_y_row2 = pos_menu[1] + c.MENU_FONT_SIZE
         col_width = GAME_WIDTH // 4
+        pos_x_col2 = col_width
+        pos_x_col3 = 2 * col_width
+        pos_x_col4 = 3 * col_width
+        pos_y_row2 = pos_menu[1] + c.MENU_FONT_SIZE
         row_height = c.MENU_FONT_SIZE
         moves, size = env.move_count, env.snake.get_size()
         green_count = env.green_apples_eaten
@@ -111,20 +111,22 @@ class GameRender:
                          (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE), 2)
         # Vertical lines separating moves and length sections
         pygame.draw.line(screen, c.MENU_TEXT_COLOR,
-                         (GAME_WIDTH // 4, pos_menu[1]),
-                         (GAME_WIDTH // 4, pos_menu[1] + c.MENU_HEIGHT), 2)
+                         (col_width, pos_menu[1]),
+                         (col_width, pos_menu[1] + c.MENU_HEIGHT), 2)
         # Vertical line separating green and red apples sections
         pygame.draw.line(screen, c.MENU_TEXT_COLOR,
-                         (3 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_FONT_SIZE),
-                         (3 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_HEIGHT), 2)
+                         (3 * col_width, pos_menu[1] + c.MENU_FONT_SIZE),
+                         (3 * col_width, pos_menu[1] + c.MENU_HEIGHT), 2)
         # Horizontal line separating the apple header from the apple counts
         pygame.draw.line(screen, c.MENU_TEXT_COLOR,
-                         (2 * GAME_WIDTH // 4, pos_menu[1] + c.MENU_FONT_SIZE * 2),
+                         (2 * col_width, pos_menu[1] + c.MENU_FONT_SIZE * 2),
                          (GAME_WIDTH,  pos_menu[1] + c.MENU_FONT_SIZE * 2), 2)
-        header_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_HEADER_SIZE)
-        value_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_VALUE_SIZE)
-        counter_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", c.MENU_FONT_COUNTER_SIZE)
-        
+        header_font = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", c.MENU_FONT_HEADER_SIZE)
+        value_font = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", c.MENU_FONT_VALUE_SIZE)
+        counter_font = pygame.font.Font(
+            "assets/PressStart2P-Regular.ttf", c.MENU_FONT_COUNTER_SIZE)
 
         # Draw moves Count
         moves_text = header_font.render("MOVES", True, c.MENU_TEXT_COLOR)
@@ -158,7 +160,8 @@ class GameRender:
         x = pos_x_col3 + (col_width * 2 - apples_text.get_width()) // 2
         y = pos_menu[1] + (row_height - apples_text.get_height()) // 2
         screen.blit(apples_text, (x, y + margin))
-        green_apples_text = header_font.render("GREEN", True, c.MENU_TEXT_COLOR)
+        green_apples_text = header_font.render(
+            "GREEN", True, c.MENU_TEXT_COLOR)
         x = pos_x_col3 + (col_width - green_apples_text.get_width()) // 2
         y = pos_y_row2 + (row_height - green_apples_text.get_height()) // 2
         screen.blit(green_apples_text, (x, y + margin))
@@ -166,14 +169,16 @@ class GameRender:
         x = pos_x_col4 + (col_width - red_apples_text.get_width()) // 2
         screen.blit(red_apples_text, (x, y + margin))
 
-        green_apples_value_text = counter_font.render(f"{green_count}", True, c.GREEN)
+        green_apples_value_text = counter_font.render(
+            f"{green_count}", True, c.GREEN)
         x = pos_x_col3 + (col_width - green_apples_value_text.get_width()) // 2
         remaining_space = c.MENU_HEIGHT - (row_height * 2)
         y = pos_y_row2 + row_height + (
             remaining_space - green_apples_value_text.get_height()) // 2
         screen.blit(green_apples_value_text, (x, y))
 
-        red_apples_value_text = counter_font.render(f"{red_count}", True, c.RED)
+        red_apples_value_text = counter_font.render(
+            f"{red_count}", True, c.RED)
         x = pos_x_col4 + (col_width - red_apples_value_text.get_width()) // 2
         remaining_space = c.MENU_HEIGHT - (row_height * 2)
         y = pos_y_row2 + row_height + (

@@ -13,7 +13,7 @@ class MainMenuScene(Scene):
         self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 18)
         self.font_title = pygame.font.Font(
             "assets/PressStart2P-Regular.ttf", 26)
-        
+
         pos_x = (self.app.config.render.screen_width - 200) // 2
         pos_y = 250
 
@@ -38,8 +38,10 @@ class MainMenuScene(Scene):
                                          c.RED_BUTTON,
                                          c.RED_HOVER,
                                          c.RED_CLICK)
-        
-        self.buttons = [self.start_button, self.settings_button, self.quit_button]
+
+        self.buttons = [self.start_button,
+                        self.settings_button,
+                        self.quit_button]
         self.buttons_index = 0
         self.start_button.hovered = True
 
@@ -60,11 +62,17 @@ class MainMenuScene(Scene):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
                 self.buttons[self.buttons_index].hovered = False
-                self.buttons_index = (self.buttons_index - 1) % len(self.buttons)
+                self.buttons_index = (
+                    (self.buttons_index - 1)
+                    % len(self.buttons)
+                    )
                 self.buttons[self.buttons_index].hovered = True
             elif event.key == pygame.K_DOWN:
                 self.buttons[self.buttons_index].hovered = False
-                self.buttons_index = (self.buttons_index + 1) % len(self.buttons)
+                self.buttons_index = (
+                    (self.buttons_index + 1)
+                    % len(self.buttons)
+                    )
                 self.buttons[self.buttons_index].hovered = True
             elif event.key == pygame.K_RETURN:
                 if self.start_button.hovered:

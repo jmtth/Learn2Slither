@@ -1,4 +1,3 @@
-import const as c
 import pygame
 from scenes.scene import Scene
 from render.game_render import GameRender
@@ -32,14 +31,6 @@ class GameScene(Scene):
         if event.type == pygame.QUIT:
             self.running = False
         if event.type == pygame.KEYDOWN:
-            # if event.key == pygame.K_UP:
-            #     self.pending_action = "UP"
-            # elif event.key == pygame.K_DOWN:
-            #     self.pending_action = "DOWN"
-            # elif event.key == pygame.K_LEFT:
-            #     self.pending_action = "LEFT"
-            # elif event.key == pygame.K_RIGHT:
-            #     self.pending_action = "RIGHT"
             if event.key == pygame.K_ESCAPE:
                 from scenes.mainmenu_scene import MainMenuScene
                 self.app.change_scene(MainMenuScene(self.app))
@@ -52,7 +43,10 @@ class GameScene(Scene):
             now = pygame.time.get_ticks()
             launch_time = now - self.start_time
 
-            if launch_time > 2000 and now - self.last_move_time >= self.move_delay:
+            if (
+                launch_time > 2000
+                and now - self.last_move_time >= self.move_delay
+            ):
                 self.env.step(self.pending_action)
                 self.pending_action = None
                 self.last_move_time = now
@@ -67,8 +61,18 @@ class GameScene(Scene):
         if not os.path.exists('scores.csv'):
             with open('scores.csv', mode='w', newline='') as file:
                 writer = csv.writer(file)
-                writer.writerow(["Player", "Date", "Moves", "Length", "Green Apples", "Red Apples"])
+                writer.writerow(["Player",
+                                 "Date",
+                                 "Moves",
+                                 "Length",
+                                 "Green Apples",
+                                 "Red Apples"])
         with open('scores.csv', mode='a', newline='') as file:
             writer = csv.writer(file)
             date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            writer.writerow(["Human", date, self.env.move_count, self.env.snake.get_size(), self.env.green_apples_eaten, self.env.red_apples_eaten])
+            writer.writerow(["Human",
+                             date,
+                             self.env.move_count,
+                             self.env.snake.get_size(),
+                             self.env.green_apples_eaten,
+                             self.env.red_apples_eaten])

@@ -9,7 +9,10 @@ class Popup:
         self.font = font
         self.width = width
         self.height = height
-        self.rect = pygame.Rect((config.render.screen_width - width) // 2, (config.render.game_height - height) // 2, width, height)
+        self.rect = pygame.Rect(
+            (config.render.screen_width - width) // 2,
+            (config.render.game_height - height) // 2,
+            width, height)
         self.active = False
 
     def show(self, message=None):
@@ -30,4 +33,7 @@ class Popup:
         lines = self.message.split("\n")
         for i, line in enumerate(lines):
             txt = self.font.render(line, True, c.RED)
-            screen.blit(txt, txt.get_rect(center=(self.config.render.screen_width // 2, self.rect.y + 40 + i * 30)))
+            screen.blit(txt, txt.get_rect(center=(
+                self.config.render.screen_width // 2,
+                self.rect.y + 40 + i * 30))
+                )
