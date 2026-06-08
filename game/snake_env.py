@@ -35,6 +35,7 @@ class SnakeEnv:
         self.check_self_collision()
         self.check_fruit_collision()
         self.move_count += 1
+        self.vision(self.fruits)
 
     def get_state(self):
         pass
@@ -98,3 +99,43 @@ class SnakeEnv:
         head = self.snake.body[0]
         if head in self.snake.body[1:]:
             self.game_over = True
+
+    def vision(self, fruits):
+        """Generates a vision grid for the snake,
+        showing the relative positions.
+        """
+        head_x, head_y = self.snake.body[0]
+        body_positions = set(self.snake.body[1:])
+        fruit_map = {tuple(f.position): f for f in fruits}
+
+        def cell_symbol(x, y):
+            if (x, y) == (head_x, head_y):
+                return "H"
+            if (x, y) in body_positions:
+                return "S"
+            if fruit := fruit_map.get((x, y)):
+                return "G" if fruit.color == c.GREEN else "R"
+            return "O"
+
+        # Empty Grid with Walls (size + 2 for borders)
+        size = self.config.nb_cells + 2
+        vision_data = [[" "] * size for _ in range(size)]
+
+        # Walls (W) on the cross borders
+        vision_data[0][head_x + 1] = "W"
+        vision_data[size - 1][head_x + 1] = "W"
+        vision_data[head_y + 1][0] = "W"
+        vision_data[head_y + 1][size - 1] = "W"
+
+        # Vertical line (x == head_x)
+        for y in range(self.config.nb_cells):
+            vision_data[y + 1][head_x + 1] = cell_symbol(head_x, y)
+
+        # Horizontal line (y == head_y)
+        for x in range(self.config.nb_cells):
+            vision_data[head_y + 1][x + 1] = cell_symbol(x, head_y)
+
+        for row in vision_data:
+            print("".join(row))
+        print()
+        return vision_data
