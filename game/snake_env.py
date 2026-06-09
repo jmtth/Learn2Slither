@@ -27,6 +27,7 @@ class SnakeEnv:
                 self.spawn_fruit(c.GREEN)
         # self.vision(self.fruits)
         self.state = self.get_state()
+        return self.state
 
     def step(self, action=None):
         """Advances the game state by one step based on the given action."""
@@ -36,12 +37,35 @@ class SnakeEnv:
             print(f"{action}\n")
         self.snake.move()
         # self.vision(self.fruits)
-        self.state = self.get_state()
         reward += self.check_wall_collision()
         reward += self.check_self_collision()
         reward += self.check_fruit_collision()
+        if not self.game_over:
+            self.state = self.get_state()
         self.move_count += 1
         return self.state, reward, self.game_over
+
+# def get_state(self):
+#     head_x, head_y = self.snake.body[0]
+#     vision_grid = self.vision(self.fruits)
+#     up_string = "".join(vision_grid[i][head_x + 1]
+#                         for i in range(head_y + 1))
+#     down_string = "".join(vision_grid[i][head_x + 1]
+#                           for i in range(head_y + 2, len(vision_grid)))
+#     left_string = "".join(vision_grid[head_y + 1][i]
+#                           for i in range(head_x + 1))
+#     right_string = "".join(vision_grid[head_y + 1][i]
+#                            for i in range(head_x + 2, len(vision_grid[0])))
+
+#     state = (
+#             up_string,
+#             down_string,
+#             left_string,
+#             right_string,
+#             self.snake.direction
+#         )
+#     print(f"State: {state}\n")
+#     return state
 
     def get_state(self):
         head_x, head_y = self.snake.body[0]
@@ -55,15 +79,48 @@ class SnakeEnv:
         right_string = "".join(vision_grid[head_y + 1][i]
                                for i in range(head_x + 2, len(vision_grid[0])))
 
-        state = (
-                up_string,
-                down_string,
-                left_string,
-                right_string,
-                self.snake.direction
+        def is_dangerous(char: str) -> bool:
+            """Determines if a character in the vision grid
+            represents a danger to the snake."""
+            return (
+                char == 'W' or
+                char == 'S' or
+                (char == 'R' and len(self.snake.body) <= 2)
             )
-        print(f"State: {state}\n")
-        return state
+
+        # Immediate Danger in each direction
+        danger = (
+            is_dangerous(up_string[0]),
+            is_dangerous(down_string[0]),
+            is_dangerous(left_string[0]),
+            is_dangerous(right_string[0]),
+        )
+
+        # First object seen on the path
+        def scan(string: str) -> str:
+            """Iterates through the squares in order and returns
+            whatever is seen first: 'W', 'G', 'R'.
+
+            The snake's body is treated as a wall
+            to minimize the number of states.
+            """
+            for char in string:
+                if is_dangerous(char):
+                    return 'W'  # Wall, Body or Dangerous Red Apple
+                if char == 'G' or char == 'R':
+                    return char
+            return 'W'
+
+        up = scan(up_string)
+        down = scan(down_string)
+        left = scan(left_string)
+        right = scan(right_string)
+
+        return (
+            danger,
+            self.snake.direction,
+            up, down, right, left,  # 'W' | 'G' | 'R'
+        )
 
     def spawn_fruit(self, color):
         """Spawns a new fruit of the given color at a random position
