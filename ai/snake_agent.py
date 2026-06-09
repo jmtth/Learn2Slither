@@ -72,6 +72,7 @@ class SnakeAgent:
                     next_state = self.get_state()
                 else:
                     next_state = state
+                    self.env.save_score("Agent")
 
                 self.agent.learn(
                     state,
@@ -93,6 +94,7 @@ class SnakeAgent:
             next_state = self.get_state()
         else:
             next_state = state
+            self.env.save_score("Agent")
         self.agent.learn(
             state,
             action,

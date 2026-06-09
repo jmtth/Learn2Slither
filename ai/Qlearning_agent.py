@@ -66,7 +66,7 @@ class QLearningAgent:
     def save_model(self, episodes=10):
         with open(f"q_table_{episodes}.pkl", "wb") as file:
             pickle.dump(self.q_table, file)
-        print(self.q_table)
+        print(self.q_table)   
 
     def load_model(self, path: str = "q_table_10.pkl"):
         with open(path, "rb") as file:

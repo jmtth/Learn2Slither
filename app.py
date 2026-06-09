@@ -3,11 +3,12 @@ import pygame
 from scenes.mainmenu_scene import MainMenuScene
 from scenes.agent_scene import AgentScene
 from config import AppConfig
+from stats.manage_csv import MyStats
 
 
 class App:
-    def __init__(self, scene=None):
-        self.config = AppConfig()
+    def __init__(self, scene, config):
+        self.config = config
         pygame.init()
         pygame.display.set_caption('Learn2Slither Snake')
         self.screen = pygame.display.set_mode(
@@ -16,7 +17,7 @@ class App:
         self.clock = pygame.time.Clock()
         self.running = True
         self.pause = True
-        self.scene = scene(self) if scene else MainMenuScene(self)
+        self.scene = scene(self)
         self.gameover = False
         self.score = 0
         self.pause = True
@@ -56,24 +57,27 @@ def main(argv: list[str] | None = None) -> int:
     args = Parser(argv).args
 
     if args.human:
-        game = App(MainMenuScene)
+        game = App(MainMenuScene, AppConfig)
         game.run()
         pygame.quit()
     else:
-        load_ai_config(args)
+        config = load_ai_config(args)
         if args.visual == "on":
-            game = App(AgentScene)
+            print(f"config: {config}")
+            game = App(AgentScene, config)
             game.run()
             pygame.quit()
         else:
             from ai.Qlearning_agent import QLearningAgent
             from game.snake_env import SnakeEnv
             from ai.snake_agent import SnakeAgent
-            config = AppConfig()
+            config = config
             env = SnakeEnv(config.game)
             agent = QLearningAgent()
             trainer = SnakeAgent(env, agent)
             trainer.train(args.sessions)
+            max_length = MyStats().get_sessions_stat()
+            print(f"Max length: {max_length} in {config.ai.sessions} episodes")
     return 0
 
 

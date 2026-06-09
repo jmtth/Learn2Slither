@@ -71,7 +71,7 @@ class Parser:
         )
         parser.add_argument(
             "-dontlearn",
-            action="store_false",
+            action="store_true",
             help="Disable learning mode for the snake agent.",
         )
         parser.add_argument(
