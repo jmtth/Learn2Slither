@@ -23,8 +23,8 @@ class AgentScene(Scene):
     def update(self):
         self.SnakeAgent.learn_step(self.SnakeAgent.get_state())
         if self.env.game_over:
-            self.env.reset()
             self.env.save_score("Agent")
+            self.env.reset()
             self.episode += 1
             if self.episode >= self.app.config.ai.sessions:
                 self.SnakeAgent.agent.save_model(self.episode)
