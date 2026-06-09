@@ -3,9 +3,9 @@ from scenes.scene import Scene
 from render.game_render import GameRender
 from game.snake_env import SnakeEnv
 from controllers.human_controller import HumanController
-import csv
-import datetime
-import os
+# import csv
+# import datetime
+# import os
 
 
 class HumanScene(Scene):
@@ -59,27 +59,27 @@ class HumanScene(Scene):
                     self.last_move_time = now
             self.gameover = self.env.game_over
             if self.gameover:
-                self.save_score()
+                self.env.save_score("Human")
 
     def draw(self, screen):
         self.renderer.draw(screen, self.env)
 
-    def save_score(self):
-        if not os.path.exists('scores.csv'):
-            with open('scores.csv', mode='w', newline='') as file:
-                writer = csv.writer(file)
-                writer.writerow(["Player",
-                                 "Date",
-                                 "Moves",
-                                 "Length",
-                                 "Green Apples",
-                                 "Red Apples"])
-        with open('scores.csv', mode='a', newline='') as file:
-            writer = csv.writer(file)
-            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            writer.writerow(["Human",
-                             date,
-                             self.env.move_count,
-                             self.env.snake.get_size(),
-                             self.env.green_apples_eaten,
-                             self.env.red_apples_eaten])
+    # def save_score(self):
+    #     if not os.path.exists('scores.csv'):
+    #         with open('scores.csv', mode='w', newline='') as file:
+    #             writer = csv.writer(file)
+    #             writer.writerow(["Player",
+    #                              "Date",
+    #                              "Moves",
+    #                              "Length",
+    #                              "Green Apples",
+    #                              "Red Apples"])
+    #     with open('scores.csv', mode='a', newline='') as file:
+    #         writer = csv.writer(file)
+    #         date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    #         writer.writerow(["Human",
+    #                          date,
+    #                          self.env.move_count,
+    #                          self.env.snake.get_size(),
+    #                          self.env.green_apples_eaten,
+    #                          self.env.red_apples_eaten])

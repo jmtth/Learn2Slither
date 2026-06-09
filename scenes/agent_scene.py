@@ -14,13 +14,22 @@ class AgentScene(Scene):
         self.renderer = GameRender(app.config)
         self.LearningAgent = QLearningAgent()
         self.SnakeAgent = SnakeAgent(self.env, self.LearningAgent)
+        self.episode = 0
         # self.trainer.train(app.config.ai.sessions)
 
     def handle_event(self, event):
         pass
 
     def update(self):
-        self.SnakeAgent.learn_step(self.SnakeAgent.get_state())   # Train for one episode at a time to allow rendering
+        self.SnakeAgent.learn_step(self.SnakeAgent.get_state())
+        if self.env.game_over:
+            self.env.reset()
+            self.env.save_score("Agent")
+            self.episode += 1
+            if self.episode >= self.app.config.ai.sessions:
+                self.SnakeAgent.agent.save_model(self.episode)
+                from scenes.mainmenu_scene import MainMenuScene
+                self.app.change_scene(MainMenuScene(self.app))
         pass
 
     def draw(self, screen):

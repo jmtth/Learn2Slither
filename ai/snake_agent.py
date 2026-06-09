@@ -100,8 +100,9 @@ class SnakeAgent:
             next_state,
             done
         )
-        if done:
-            self.env.reset()
+        # if done:
+        #     self.env.reset()
+        #     self.env.save_score("Agent")
 
     def play(self):
         state = self.env.reset()

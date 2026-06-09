@@ -3,6 +3,9 @@ import random
 from game.apple import Apple
 from game.snake import Snake
 import const as c
+import csv
+import datetime
+import os
 
 
 class SnakeEnv:
@@ -176,3 +179,23 @@ class SnakeEnv:
             print("".join(row))
         print()
         return vision_data
+
+    def save_score(self, player="Human"):
+        if not os.path.exists('scores.csv'):
+            with open('scores.csv', mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["Player",
+                                 "Date",
+                                 "Moves",
+                                 "Length",
+                                 "Green Apples",
+                                 "Red Apples"])
+        with open('scores.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            writer.writerow([player,
+                             date,
+                             self.move_count,
+                             self.snake.get_size(),
+                             self.green_apples_eaten,
+                             self.red_apples_eaten])
