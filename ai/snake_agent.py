@@ -100,7 +100,6 @@ class SnakeAgent:
             next_state,
             done
         )
-        state = next_state
         if done:
             self.env.reset()
 

@@ -8,7 +8,7 @@ import datetime
 import os
 
 
-class GameScene(Scene):
+class HumanScene(Scene):
     """Main game scene where the snake game is played. """
     def __init__(self, app):
         super().__init__(app)
@@ -42,17 +42,19 @@ class GameScene(Scene):
         if not self.gameover and not self.pause:
             if self.app.config.render.step_by_step:
                 if self.pending_action:
+                    self.env.vision(self.env.fruits)
                     self.env.step(self.pending_action)
                     self.pending_action = None
             else:
                 now = pygame.time.get_ticks()
                 launch_time = now - self.start_time
                 if (
-
                     launch_time > 2000
                     and now - self.last_move_time >= self.move_delay
                 ):
+                    self.env.vision(self.env.fruits)
                     self.env.step(self.pending_action)
+                    print("FORWARD\n")
                     self.pending_action = None
                     self.last_move_time = now
             self.gameover = self.env.game_over

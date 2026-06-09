@@ -1,6 +1,6 @@
 import pygame
 from scenes.scene import Scene
-from scenes.game_scene import GameScene
+from scenes.human_scene import HumanScene
 from scenes.game_settings import GameSettings
 import render.button_render as button
 import const as c
@@ -46,7 +46,7 @@ class MainMenuScene(Scene):
         self.start_button.hovered = True
 
     def start_game(self):
-        self.app.change_scene(GameScene(self.app))
+        self.app.change_scene(HumanScene(self.app))
         pass
 
     def open_settings(self):

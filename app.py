@@ -1,12 +1,12 @@
+from parser import Parser
 import pygame
-# from scenes.game_scene import GameScene
 from scenes.mainmenu_scene import MainMenuScene
+from scenes.agent_scene import AgentScene
 from config import AppConfig
-import argparse
 
 
 class App:
-    def __init__(self):
+    def __init__(self, scene=None):
         self.config = AppConfig()
         pygame.init()
         pygame.display.set_caption('Learn2Slither Snake')
@@ -16,7 +16,7 @@ class App:
         self.clock = pygame.time.Clock()
         self.running = True
         self.pause = True
-        self.scene = MainMenuScene(self)
+        self.scene = scene(self) if scene else MainMenuScene(self)
         self.gameover = False
         self.score = 0
         self.pause = True
@@ -38,45 +38,42 @@ class App:
             pygame.display.flip()
 
 
+def load_ai_config(args):
+    """ Loads AI configuration from command-line
+    arguments into the AppConfig.
+    """
+    app_config = AppConfig()
+    app_config.ai.sessions = args.sessions
+    app_config.ai.visual = args.visual
+    app_config.ai.load_name = args.load
+    app_config.ai.save_name = args.save
+    app_config.ai.learn = not args.dontlearn
+    app_config.ai.step_by_step = args.step_by_step
+    return app_config
+
+
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--sessions",
-        dest="sessions",
-        type=int,
-        default=10,
-        help="Number of sessions to learn.",
-    )
-    parser.add_argument(
-        "--learning",
-        dest="learning",
-        type=bool,
-        default=False,
-        help="Learning mode, True or False.",
-    )
-    parser.add_argument(
-        "--graphic",
-        dest="graphic",
-        default=True,
-        help="Path where the generated responses should be written.",
-    )
-    args = parser.parse_args(argv)
+    args = Parser(argv).args
 
-    # run_cli(args.functions_definition, args.input_path, args.output_path)
-
-    if not args.learning:
-        game = App()
+    if args.human:
+        game = App(MainMenuScene)
         game.run()
         pygame.quit()
     else:
-        from ai.Qlearning_agent import QLearningAgent
-        from game.snake_env import SnakeEnv
-        from ai.Snake_agent import SnakeAgent
-        config = AppConfig()
-        env = SnakeEnv(config.game)
-        agent = QLearningAgent()
-        trainer = SnakeAgent(env, agent)
-        trainer.train(args.sessions)
+        load_ai_config(args)
+        if args.visual == "on":
+            game = App(AgentScene)
+            game.run()
+            pygame.quit()
+        else:
+            from ai.Qlearning_agent import QLearningAgent
+            from game.snake_env import SnakeEnv
+            from ai.snake_agent import SnakeAgent
+            config = AppConfig()
+            env = SnakeEnv(config.game)
+            agent = QLearningAgent()
+            trainer = SnakeAgent(env, agent)
+            trainer.train(args.sessions)
     return 0
 
 

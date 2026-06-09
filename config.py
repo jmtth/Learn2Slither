@@ -22,9 +22,21 @@ class RenderConfig:
 
 
 @dataclass
+class AiConfig:
+    sessions: int = 10
+    models_path: str = "models/"
+    save_name: str = "q_table"
+    visual: bool = False
+    load_name: str | None = None
+    learn: bool = True
+    step_by_step: bool = False
+
+
+@dataclass
 class AppConfig:
     game: GameConfig = field(default_factory=GameConfig)
     render: RenderConfig = field(default_factory=RenderConfig)
+    ai: AiConfig = field(default_factory=AiConfig)
 
     @property
     def cell_size(self):
