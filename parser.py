@@ -1,32 +1,7 @@
 
 import argparse
 import pickle
-from typing import TypedDict, Tuple, Dict, Literal, NamedTuple
-
-
-class ActionValues(TypedDict):
-    UP: float
-    DOWN: float
-    LEFT: float
-    RIGHT: float
-
-
-Direction = Tuple[int, int]
-Danger = Tuple[bool, bool, bool, bool]
-Object = Literal['W', 'G', 'R']
-
-
-class State(NamedTuple):
-    danger: Danger
-    direction: Direction
-    up: Object
-    down: Object
-    right: Object
-    left: Object
-
-
-QTable = Dict[State, ActionValues]
-q_table: QTable
+from game.state import State, QTable
 
 
 class Parser:
@@ -105,8 +80,11 @@ class Parser:
                             f"Model file '{file_name}' is corrupted.")
             except FileNotFoundError:
                 self.parser.error(f"Model file '{file_name}' not found.")
+        if self.args.dontlearn and not self.args.load:
+            self.parser.error(
+                "Cannot disable learning without loading a model.")
 
-    def q_table_type_check(self, q_table):
+    def q_table_type_check(self, q_table: QTable):
         """Checks if the loaded Q-table has the correct structure."""
         if not isinstance(q_table, dict):
             self.parser.error(

@@ -1,3 +1,6 @@
+from game.state import State, Object
+
+
 class SnakeAgent:
     def __init__(self, env, agent):
         self.env = env
@@ -26,14 +29,14 @@ class SnakeAgent:
 
         # Immediate Danger in each direction
         danger = (
-            is_dangerous(up_string[0]),
+            is_dangerous(up_string[-1]),
             is_dangerous(down_string[0]),
-            is_dangerous(left_string[0]),
+            is_dangerous(left_string[-1]),
             is_dangerous(right_string[0]),
         )
 
         # First object seen on the path
-        def scan(string: str) -> str:
+        def scan(string: str) -> Object:
             """Iterates through the squares in order and returns
             whatever is seen first: 'W', 'G', 'R'.
 
@@ -47,15 +50,18 @@ class SnakeAgent:
                     return char
             return 'W'
 
-        up = scan(up_string[::-1])
-        down = scan(down_string)
-        left = scan(left_string[::-1])
-        right = scan(right_string)
+        up_state = scan(up_string[::-1])
+        down_state = scan(down_string)
+        left_state = scan(left_string[::-1])
+        right_state = scan(right_string)
 
-        return (
-            danger,
-            self.env.snake.direction,
-            up, down, right, left,  # 'W' | 'G' | 'R'
+        return State(
+            danger=danger,
+            direction=self.env.snake.direction,
+            up=up_state,
+            down=down_state,
+            right=right_state,
+            left=left_state
         )
 
     def train(self, episodes: int):
@@ -91,7 +97,6 @@ class SnakeAgent:
             next_state = self.get_state()
         else:
             next_state = state
-            self.env.save_score("Agent")
         self.agent.learn(
             state,
             action,
@@ -100,13 +105,26 @@ class SnakeAgent:
             done
         )
 
-    def play(self):
-        state = self.env.reset()
-        done = False
-        self.agent.load_model()
+    def play_step(self, state):
+        # action = self.agent.best_action(state)
+        # self.env.step(action)
 
-        while not done:
-            action = self.agent.best_action(state)
-            state, reward, done = self.env.step(action)
+        action = self.agent.best_action(state)
+        
+        print(self.agent.q_table)
 
-        print(f"Game over! Final score: {self.env.snake.score}")
+        print(f"State: {state}")
+        print(f"In q_table: {state in self.agent.q_table}")
+        print(f"Q-values: {self.agent.q_table[state]}")
+        print(f"Action: {action}")
+        self.env.step(action)
+
+        # state = self.env.reset()
+        # done = False
+        # self.agent.load_model()
+
+        # while not done:
+        #     action = self.agent.best_action(state)
+        #     state, reward, done = self.env.step(action)
+
+        # print(f"Game over! Final score: {self.env.snake.score}")

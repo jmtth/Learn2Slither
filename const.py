@@ -16,6 +16,11 @@ RED_HOVER = (255, 0, 0)
 RED_CLICK = (120, 30, 30)
 BG_COLOR = BLACK
 
+# Terminal colors
+T_RESET = "\033[0m"
+T_RED = "\033[31m"
+T_GREEN = "\033[32m"
+
 # MENU
 MENU_HEIGHT = 150
 MENU_COLOR = GRAY

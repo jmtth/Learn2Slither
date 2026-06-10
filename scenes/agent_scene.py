@@ -1,10 +1,10 @@
-# import pygame
+import pygame
 from scenes.scene import Scene
 from render.game_render import GameRender
 from game.snake_env import SnakeEnv
 from ai.snake_agent import SnakeAgent
 from ai.Qlearning_agent import QLearningAgent
-from stats.manage_csv import MyStats
+from controllers.agent_controller import AgentController
 
 
 class AgentScene(Scene):
@@ -13,17 +13,33 @@ class AgentScene(Scene):
         super().__init__(app)
         self.env = SnakeEnv(app.config.game)
         self.renderer = GameRender(app.config)
-        self.LearningAgent = QLearningAgent()
+        self.LearningAgent = QLearningAgent(app.config.ai.load_name)
         self.SnakeAgent = SnakeAgent(self.env, self.LearningAgent)
+        self.controller = AgentController()
         self.episode = 0
-        # self.trainer.train(app.config.ai.sessions)
+        self.last_move_time = 0
+        self.move_delay = app.config.render.ms
+        self.start_time = pygame.time.get_ticks()
+        self.step_key = False
 
     def handle_event(self, event):
-        pass
+        step = self.controller.handle_event(event)
+
+        if step:
+            self.step_key = True
+        if event.type == pygame.QUIT:
+            self.running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_s:
+                self.step_key = True
+            elif event.key == pygame.K_ESCAPE:
+                self.app.running = False
 
     def update(self):
         if self.app.config.ai.learn:
             self.learn()
+        else:
+            self.play()
         pass
 
     def draw(self, screen):
@@ -32,14 +48,28 @@ class AgentScene(Scene):
     def learn(self):
         self.SnakeAgent.learn_step(self.SnakeAgent.get_state())
         if self.env.game_over:
-            # self.env.save_score("Agent")
+            self.env.save_score(f"AgentV-{self.app.config.ai.sessions}")
             self.env.reset()
             self.episode += 1
             self.SnakeAgent.agent.decay_epsilon()
             if self.episode >= self.app.config.ai.sessions:
                 self.SnakeAgent.agent.save_model(self.episode)
-                max_length = MyStats().get_sessions_stat()
-                print(f"Max length: {max_length} in {self.episode} episodes")
-                print(f"Debug episodes: {self.app.config.ai.sessions}")
-                from scenes.mainmenu_scene import MainMenuScene
-                self.app.change_scene(MainMenuScene(self.app))
+                self.app.running = False
+
+    def play(self):
+        if not self.env.game_over and not self.env.paused:
+            if self.app.config.ai.step_by_step:
+                if self.step_key:
+                    self.SnakeAgent.play_step(self.SnakeAgent.get_state())
+                    self.step_key = False
+            else:
+                now = pygame.time.get_ticks()
+                launch_time = now - self.start_time
+                if (
+                    launch_time > 2000
+                    and now - self.last_move_time >= self.move_delay
+                ):
+                    self.SnakeAgent.play_step(self.SnakeAgent.get_state())
+                    self.last_move_time = now
+            if self.env.game_over:
+                self.env.save_score(f"AgentV-{self.app.config.ai.sessions}")

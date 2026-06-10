@@ -3,8 +3,9 @@ import pickle
 
 
 class QLearningAgent:
-    def __init__(self):
-        self.q_table = {}
+    def __init__(self, model=None):
+        q_table = self.load_model(model) if model else None
+        self.q_table = q_table if q_table is not None else {}
         self.epsilon = 1.0
         self.epsilon_decay = 0.9995
         self.epsilon_min = 0.01
@@ -68,8 +69,9 @@ class QLearningAgent:
     def save_model(self, episodes=10):
         with open(f"q_table_{episodes}.pkl", "wb") as file:
             pickle.dump(self.q_table, file)
-        print(self.q_table)   
+        print(self.q_table)
 
     def load_model(self, path: str = "q_table_10.pkl"):
+        path = f"{path}.pkl" if not path.endswith(".pkl") else path
         with open(path, "rb") as file:
-            self.q_table = pickle.load(file)
+            return pickle.load(file)

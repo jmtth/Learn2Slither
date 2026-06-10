@@ -29,6 +29,7 @@ class MyStats:
             return pd.DataFrame()
         return data
 
-    def get_sessions_stat(self, player="Agent") -> int:
+    def get_sessions_stat(self, player="Agent") -> tuple[int, int]:
         max_length = self.df[self.df["Player"] == player]["Length"].max()
-        return max_length
+        max_moves = self.df[self.df["Player"] == player]["Moves"].max()
+        return max_length, max_moves

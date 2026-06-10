@@ -4,6 +4,7 @@ from scenes.mainmenu_scene import MainMenuScene
 from scenes.agent_scene import AgentScene
 from config import AppConfig
 from stats.manage_csv import MyStats
+import const as c
 
 
 class App:
@@ -46,11 +47,26 @@ def load_ai_config(args):
     app_config = AppConfig()
     app_config.ai.sessions = args.sessions
     app_config.ai.visual = args.visual
-    app_config.ai.load_name = args.load
+    app_config.ai.load_name = args.load if args.load else None
     app_config.ai.save_name = args.save
     app_config.ai.learn = not args.dontlearn
     app_config.ai.step_by_step = args.step_by_step
     return app_config
+
+
+def print_stats(config, player="Agent"):
+    """ Prints training statistics after AI training is completed. """
+    stats = MyStats()
+    player = f"{player}-{config.ai.sessions}"
+    max_length, max_moves = stats.get_sessions_stat(player)
+    stats_message = f"{c.T_GREEN}\nTraining completed: {c.T_RESET}"
+    stats_message += f"Max length: {max_length}, "
+    stats_message += f"Max moves: {max_moves} "
+    stats_message += f"in {config.ai.sessions} episodes"
+    print(stats_message)
+    model_path = f"{config.ai.models_path}{config.ai.save_name}"
+    model_path += f"_{str(config.ai.sessions)}.pkl"
+    print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,21 +79,24 @@ def main(argv: list[str] | None = None) -> int:
     else:
         config = load_ai_config(args)
         if args.visual == "on":
-            print(f"config: {config}")
+            # print(f"config: {config}")
             game = App(AgentScene, config)
+            print(f"\nStarting training for {args.sessions} sessions...\n")
+            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
             game.run()
+            print_stats(config, player="AgentV")
             pygame.quit()
         else:
             from ai.Qlearning_agent import QLearningAgent
             from game.snake_env import SnakeEnv
             from ai.snake_agent import SnakeAgent
-            config = config
             env = SnakeEnv(config.game)
-            agent = QLearningAgent()
+            agent = QLearningAgent(config.ai.load_name)
             trainer = SnakeAgent(env, agent)
+            print(f"\nStarting training for {args.sessions} sessions...\n")
+            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
             trainer.train(args.sessions)
-            max_length = MyStats().get_sessions_stat(f"Agent-{args.sessions}")
-            print(f"Max length: {max_length} in {config.ai.sessions} episodes")
+            print_stats(config, player="Agent")
     return 0
 
 
