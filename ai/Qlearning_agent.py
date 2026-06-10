@@ -74,6 +74,6 @@ class QLearningAgent:
         print(self.q_table)
 
     def load_model(self, path: str = "q_table_10.pkl"):
-        path = f"{c.MODELS_DIR}{path}.pkl"
+        path = f"{c.MODELS_DIR}{path}.pkl" if not path.endswith(".pkl") else c.MODELS_DIR + path
         with open(path, "rb") as file:
             return pickle.load(file)

@@ -3,7 +3,7 @@ from scenes.scene import Scene
 from scenes.human_scene import HumanScene
 from scenes.game_settings_scene import GameSettings
 from scenes.stats_scene import StatsScene
-from scenes.agent_scene import AgentScene
+from scenes.ai_settings_scene import AISettings
 import render.button_render as button
 import const as c
 
@@ -67,7 +67,7 @@ class MainMenuScene(Scene):
         self.app.change_scene(HumanScene(self.app))
 
     def start_ai_game(self):
-        self.app.change_scene(AgentScene(self.app))
+        self.app.change_scene(AISettings(self.app))
 
     def open_settings(self):
         self.app.change_scene(GameSettings(self.app))
