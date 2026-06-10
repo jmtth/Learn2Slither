@@ -64,7 +64,7 @@ def print_stats(config, player="Agent"):
     stats_message += f"Max moves: {max_moves} "
     stats_message += f"in {config.ai.sessions} episodes"
     print(stats_message)
-    model_path = f"{config.ai.models_path}{config.ai.save_name}"
+    model_path = f"{c.MODELS_DIR}{config.ai.save_name}"
     model_path += f"_{str(config.ai.sessions)}.pkl"
     print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
 

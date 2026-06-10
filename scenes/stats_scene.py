@@ -43,9 +43,9 @@ class StatsScene(Scene):
         title = self.font_title.render("GAME STATS", True, c.GREEN)
         screen.blit(title, title.get_rect(center=(self.screen_width // 2, 50)))
 
-        nb_players = self.stats.get_player_count()
-        nb_games = self.stats.get_game_count()
-        stats_info = f"Total Players: {nb_players} | Total Games: {nb_games}"
+        nb_player = 0 if self.stats.df.empty else self.stats.get_player_count()
+        nb_game = 0 if self.stats.df.empty else self.stats.get_game_count()
+        stats_info = f"Total Players: {nb_player} | Total Games: {nb_game}"
         stats_surf = self.font_subtitle.render(stats_info, True, c.CYAN)
         stats_rect = stats_surf.get_rect(center=(self.screen_width // 2, 120))
         screen.blit(stats_surf, stats_rect)
@@ -57,7 +57,7 @@ class StatsScene(Scene):
             "Player  | Moves | Length | Apples", True, c.WHITE)
         text_rect = text_surf.get_rect(top=rect.top + 10, left=rect.left + 10)
         screen.blit(text_surf, text_rect)
-        list_stats = self.stats.get_top_scores()
+        list_stats = [] if self.stats.df.empty else self.stats.get_top_scores()
         for i, stat in enumerate(list_stats):
             stat_text = f"{stat[0]:<11}| {stat[1]:^8} | "
             stat_text += f"{stat[2]:^9} | {stat[3]:^8}"
@@ -74,4 +74,3 @@ class StatsScene(Scene):
         txt = self.font_scores.render(instructions, True, (180, 180, 180))
         screen.blit(txt, txt.get_rect(
             center=(self.screen_width // 2, self.screen_height - 30)))
-

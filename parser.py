@@ -2,6 +2,7 @@
 import argparse
 import pickle
 from game.state import State, QTable
+import const as c
 
 
 class Parser:
@@ -69,7 +70,7 @@ class Parser:
             self.parser.error(
                 "Number of sessions must be between 0 and 10,000.")
         if self.args.load:
-            file_name = f"{self.args.load}.pkl"
+            file_name = f"{c.MODELS_DIR}{self.args.load}.pkl"
             try:
                 with open(file_name, "rb") as file:
                     try:

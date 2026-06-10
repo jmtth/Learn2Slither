@@ -1,5 +1,6 @@
 import random
 import pickle
+import const as c
 
 
 class QLearningAgent:
@@ -68,11 +69,11 @@ class QLearningAgent:
         )
 
     def save_model(self, episodes=10):
-        with open(f"q_table_{episodes}.pkl", "wb") as file:
+        with open(f"{c.MODELS_DIR}q_table_{episodes}.pkl", "wb") as file:
             pickle.dump(self.q_table, file)
         print(self.q_table)
 
     def load_model(self, path: str = "q_table_10.pkl"):
-        path = f"{path}.pkl" if not path.endswith(".pkl") else path
+        path = f"{c.MODELS_DIR}{path}.pkl"
         with open(path, "rb") as file:
             return pickle.load(file)

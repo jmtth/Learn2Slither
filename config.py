@@ -24,7 +24,6 @@ class RenderConfig:
 @dataclass
 class AiConfig:
     sessions: int = 10
-    models_path: str = "models/"
     save_name: str = "q_table"
     visual: bool = False
     load_name: str | None = None
