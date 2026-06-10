@@ -7,6 +7,9 @@ class SnakeAgent:
         self.agent = agent
 
     def get_state(self):
+        """Encodes the current state of the game into a format
+        suitable for the Q-learning agent.
+        """
         head_x, head_y = self.env.snake.body[0]
         vision_grid = self.env.vision(self.env.fruits)
         up_string = "".join(vision_grid[i][head_x + 1]
@@ -65,6 +68,7 @@ class SnakeAgent:
         )
 
     def train(self, episodes: int):
+        """Trains the Q-learning agent for a specified number of episodes."""
         for _ in range(episodes):
             self.env.reset()
             state = self.get_state()
@@ -91,6 +95,9 @@ class SnakeAgent:
         self.agent.save_model(episodes)
 
     def learn_step(self, state):
+        """Performs a single learning step for the Q-learning agent.
+        This is used for training in the visual mode where the game loop
+        is controlled by the AgentScene."""
         action = self.agent.choose_action(state)
         reward, done = self.env.step(action)
         if not done:
@@ -106,25 +113,8 @@ class SnakeAgent:
         )
 
     def play_step(self, state):
-        # action = self.agent.best_action(state)
-        # self.env.step(action)
-
+        """Performs a single step for the Q-learning agent without learning.
+        This is used for playing in the visual mode where the game loop
+        is controlled by the AgentScene."""
         action = self.agent.best_action(state)
-        
-        print(self.agent.q_table)
-
-        print(f"State: {state}")
-        print(f"In q_table: {state in self.agent.q_table}")
-        print(f"Q-values: {self.agent.q_table[state]}")
-        print(f"Action: {action}")
         self.env.step(action)
-
-        # state = self.env.reset()
-        # done = False
-        # self.agent.load_model()
-
-        # while not done:
-        #     action = self.agent.best_action(state)
-        #     state, reward, done = self.env.step(action)
-
-        # print(f"Game over! Final score: {self.env.snake.score}")

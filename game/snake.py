@@ -11,8 +11,6 @@ class Snake:
         position = [random.randrange(config.nb_cells),
                     random.randrange(config.nb_cells)]
         self.make_body(position)
-        # Debug print to check initial body positions
-        # print(f"Initial snake body: {self.body}")
 
     def make_body(self, position):
         """Initializes the snake's body based

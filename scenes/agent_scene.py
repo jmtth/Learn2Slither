@@ -46,6 +46,9 @@ class AgentScene(Scene):
         self.renderer.draw(screen, self.env)
 
     def learn(self):
+        """Performs a simple learning step for the Q-learning agent.
+        This is used for training in the visual mode.
+        """
         self.SnakeAgent.learn_step(self.SnakeAgent.get_state())
         if self.env.game_over:
             self.env.save_score(f"AgentV-{self.app.config.ai.sessions}")
@@ -57,6 +60,14 @@ class AgentScene(Scene):
                 self.app.running = False
 
     def play(self):
+        """Performs a simple play step for the Q-learning agent.
+        This is used for playing in the visual mode where the game loop
+        is controlled by the AgentScene.
+
+        There is a step_by_step mode that allows the user to control
+        the pace of the game by pressing the 'S' key to advance
+        one step at a time.
+        """
         if not self.env.game_over and not self.env.paused:
             if self.app.config.ai.step_by_step:
                 if self.step_key:

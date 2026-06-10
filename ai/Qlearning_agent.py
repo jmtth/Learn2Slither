@@ -31,6 +31,7 @@ class QLearningAgent:
         return self.best_action(state)
 
     def best_action(self, state):
+        """Returns the action with the highest Q-value for the given state."""
         q_values = self.get_q_values(state)
         return max(q_values, key=q_values.get)
 

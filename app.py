@@ -79,7 +79,6 @@ def main(argv: list[str] | None = None) -> int:
     else:
         config = load_ai_config(args)
         if args.visual == "on":
-            # print(f"config: {config}")
             game = App(AgentScene, config)
             print(f"\nStarting training for {args.sessions} sessions...\n")
             print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
