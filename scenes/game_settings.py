@@ -81,9 +81,9 @@ class GameSettings(Scene):
             center=(self.screen_width // 2, 200)))
         screen.blit(step_by_step_text, step_by_step_text.get_rect(
             center=(self.screen_width // 2, 250)))
-        instructions = "← → to change board size\n"
-        instructions += "↑ ↓ to adjust speed\n"
-        instructions += "p to toggle step-by-step mode\n"
+        instructions = "[← →] to change board size\n"
+        instructions += "[↑ ↓] to adjust speed\n"
+        instructions += "[s] to toggle step-by-step mode\n"
         instructions += "[ESC] to return to main menu"
         lines = instructions.split("\n")
         for i, line in enumerate(lines):

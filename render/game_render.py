@@ -195,14 +195,7 @@ class GameRender:
         when the game is over.
         """
         self.gameover_shown = True
-        # GAME_WIDTH = self.config.render.screen_width
-        # GAME_HEIGHT = self.config.render.game_height
         gameover_font = pygame.font.SysFont(None, c.MENU_FONT_SIZE)
-        # gameover_text = gameover_font.render("Game Over!", True, c.RED)
-        # x = (GAME_WIDTH - gameover_text.get_width()) // 2
-        # y = (GAME_HEIGHT - gameover_text.get_height()) // 2
-        # screen.blit(gameover_text, (x, y))
-        # pygame.display.flip()
         popup = Popup("Game Over!\n\nThanks for playing.",
                       gameover_font,
                       self.config,

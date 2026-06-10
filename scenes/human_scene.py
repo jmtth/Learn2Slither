@@ -3,9 +3,6 @@ from scenes.scene import Scene
 from render.game_render import GameRender
 from game.snake_env import SnakeEnv
 from controllers.human_controller import HumanController
-# import csv
-# import datetime
-# import os
 
 
 class HumanScene(Scene):
@@ -21,6 +18,7 @@ class HumanScene(Scene):
         self.last_move_time = 0
         self.move_delay = app.config.render.ms
         self.start_time = pygame.time.get_ticks()
+        self.env.print_vision(self.env.fruits)
 
     def handle_event(self, event):
         action = self.controller.handle_event(event)
@@ -42,9 +40,7 @@ class HumanScene(Scene):
         if not self.gameover and not self.pause:
             if self.app.config.render.step_by_step:
                 if self.pending_action:
-                    self.env.vision(self.env.fruits)
-                    self.env.step(self.pending_action)
-                    self.pending_action = None
+                    self.do_step()
             else:
                 now = pygame.time.get_ticks()
                 launch_time = now - self.start_time
@@ -52,34 +48,21 @@ class HumanScene(Scene):
                     launch_time > 2000
                     and now - self.last_move_time >= self.move_delay
                 ):
-                    self.env.vision(self.env.fruits)
-                    self.env.step(self.pending_action)
-                    print("FORWARD\n")
-                    self.pending_action = None
+                    self.do_step()
                     self.last_move_time = now
             self.gameover = self.env.game_over
             if self.gameover:
                 self.env.save_score("Human")
 
+    def do_step(self):
+
+        self.env.step(self.pending_action)
+        if self.pending_action:
+            print(f"{self.pending_action}\n")
+        else:
+            print("FORWARD\n")
+        self.env.print_vision(self.env.fruits)
+        self.pending_action = None
+
     def draw(self, screen):
         self.renderer.draw(screen, self.env)
-
-    # def save_score(self):
-    #     if not os.path.exists('scores.csv'):
-    #         with open('scores.csv', mode='w', newline='') as file:
-    #             writer = csv.writer(file)
-    #             writer.writerow(["Player",
-    #                              "Date",
-    #                              "Moves",
-    #                              "Length",
-    #                              "Green Apples",
-    #                              "Red Apples"])
-    #     with open('scores.csv', mode='a', newline='') as file:
-    #         writer = csv.writer(file)
-    #         date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    #         writer.writerow(["Human",
-    #                          date,
-    #                          self.env.move_count,
-    #                          self.env.snake.get_size(),
-    #                          self.env.green_apples_eaten,
-    #                          self.env.red_apples_eaten])

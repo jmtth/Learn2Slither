@@ -57,7 +57,7 @@ def main(argv: list[str] | None = None) -> int:
     args = Parser(argv).args
 
     if args.human:
-        game = App(MainMenuScene, AppConfig)
+        game = App(MainMenuScene, AppConfig())
         game.run()
         pygame.quit()
     else:
@@ -76,13 +76,10 @@ def main(argv: list[str] | None = None) -> int:
             agent = QLearningAgent()
             trainer = SnakeAgent(env, agent)
             trainer.train(args.sessions)
-            max_length = MyStats().get_sessions_stat()
+            max_length = MyStats().get_sessions_stat(f"Agent-{args.sessions}")
             print(f"Max length: {max_length} in {config.ai.sessions} episodes")
     return 0
 
 
 if __name__ == "__main__":
-    # game = App()
-    # game.run()
-    # pygame.quit()
     main()

@@ -47,9 +47,9 @@ class SnakeAgent:
                     return char
             return 'W'
 
-        up = scan(up_string)
+        up = scan(up_string[::-1])
         down = scan(down_string)
-        left = scan(left_string)
+        left = scan(left_string[::-1])
         right = scan(right_string)
 
         return (
@@ -59,21 +59,19 @@ class SnakeAgent:
         )
 
     def train(self, episodes: int):
-        for episode in range(episodes):
+        for _ in range(episodes):
             self.env.reset()
             state = self.get_state()
             done = False
 
             while not done:
                 action = self.agent.choose_action(state)
-
                 reward, done = self.env.step(action)
                 if not done:
                     next_state = self.get_state()
                 else:
                     next_state = state
-                    self.env.save_score("Agent")
-
+                    self.env.save_score(f"Agent-{episodes}")
                 self.agent.learn(
                     state,
                     action,
@@ -81,10 +79,9 @@ class SnakeAgent:
                     next_state,
                     done
                 )
-
                 state = next_state
-
             self.agent.decay_epsilon()
+
         self.agent.save_model(episodes)
 
     def learn_step(self, state):
@@ -102,9 +99,6 @@ class SnakeAgent:
             next_state,
             done
         )
-        # if done:
-        #     self.env.reset()
-        #     self.env.save_score("Agent")
 
     def play(self):
         state = self.env.reset()

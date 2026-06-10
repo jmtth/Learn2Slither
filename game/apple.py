@@ -12,7 +12,7 @@ class Apple:
         self.color = color
         self.position = position
         # Debug print to check initial position
-        print(f"Initial apple position: {self.position}")
+        # print(f"Initial apple position: {self.position}")
 
     def __str__(self):
         return f"Apple(color={self.color}, position={self.position})"

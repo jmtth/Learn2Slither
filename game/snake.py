@@ -12,7 +12,7 @@ class Snake:
                     random.randrange(config.nb_cells)]
         self.make_body(position)
         # Debug print to check initial body positions
-        print(f"Initial snake body: {self.body}")
+        # print(f"Initial snake body: {self.body}")
 
     def make_body(self, position):
         """Initializes the snake's body based
@@ -44,8 +44,8 @@ class Snake:
         head_x, head_y = self.body[0]
         dir_x, dir_y = self.direction[0], self.direction[1]
         new_head = (head_x + dir_x, head_y + dir_y)
-        self.body.insert(0, new_head)  # Add new head to the front of the body
-        self.body.pop()  # Remove the tail
+        self.body.insert(0, new_head)
+        self.body.pop()
 
     def grow(self):
         """Adds a new segment to the snake's body

@@ -96,5 +96,3 @@ class MainMenuScene(Scene):
         self.start_button.draw(screen)
         self.settings_button.draw(screen)
         self.quit_button.draw(screen)
-
-        # draw title, buttons, etc.

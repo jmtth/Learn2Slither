@@ -90,7 +90,7 @@ class Parser:
         if self.args.sessions > 0 and self.args.human:
             self.parser.error(
                 "Cannot enable both learning sessions and human play modes.")
-        if self.args.sessions < 0 or self.args.sessions > 10000:
+        if self.args.sessions < 0 or self.args.sessions > 100000:
             self.parser.error(
                 "Number of sessions must be between 0 and 10,000.")
         if self.args.load:

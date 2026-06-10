@@ -29,6 +29,6 @@ class MyStats:
             return pd.DataFrame()
         return data
 
-    def get_sessions_stat(self):
-        max_length = self.df[self.df["Player"] == "Agent"]["Length"].max()
+    def get_sessions_stat(self, player="Agent") -> int:
+        max_length = self.df[self.df["Player"] == player]["Length"].max()
         return max_length

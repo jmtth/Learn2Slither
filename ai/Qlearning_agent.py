@@ -6,7 +6,7 @@ class QLearningAgent:
     def __init__(self):
         self.q_table = {}
         self.epsilon = 1.0
-        self.epsilon_decay = 0.995
+        self.epsilon_decay = 0.9995
         self.epsilon_min = 0.01
         self.alpha = 0.1
         self.gamma = 0.9
@@ -36,16 +36,18 @@ class QLearningAgent:
     def learn(self, state, action, reward, next_state, done):
         """Updates the Q-table based on
         the action taken and the reward received.
+
+        Bellman equation
+        Q(s, a) += α * (reward + γ * max(Q(s', a')) - Q(s, a))
+        Q(s, a) is the Q-value for a given state-action pair.
+        R(s, a) is the immediate reward for taking action a in state s.
+        discount_factor (γ): How much future rewards are valued.
+        max.α Q(s',a)is the maximum Q-value for the next state s'.
+        learning_rate (α): How much new info overrides old info.
+        more smooth updates with a lower α, faster learning with a higher α.
+        r rewards
         """
-        # Bellman equation
-        # Q(s, a) += α * (reward + γ * max(Q(s', a')) - Q(s, a))
-        # Q(s, a) is the Q-value for a given state-action pair.
-        # R(s, a) is the immediate reward for taking action a in state s.
-        # discount_factor (γ): How much future rewards are valued.
-        # max.α Q(s',a)is the maximum Q-value for the next state s'.
-        # learning_rate (α): How much new info overrides old info.
-        # more smooth updates with a lower α, faster learning with a higher α.
-        # r rewards
+
         q_values = self.get_q_values(state)
         current_q = q_values[action]
 
