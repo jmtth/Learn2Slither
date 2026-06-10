@@ -33,3 +33,25 @@ class MyStats:
         max_length = self.df[self.df["Player"] == player]["Length"].max()
         max_moves = self.df[self.df["Player"] == player]["Moves"].max()
         return max_length, max_moves
+
+    def get_top_scores(self) -> list[tuple[str, int, int, int]]:
+        """ Returns the top 17 scores sorted by length (descending)
+        and moves (ascending).
+
+        returns:
+            pd.DataFrame: A List containing the top 17 scores with columns
+            "Player", "Moves", "Length", "Green Apples".
+        """
+        df_filtered = self.df[["Player", "Moves", "Length", "Green Apples"]]
+        df_sorted = df_filtered.sort_values(
+            by=["Length", "Moves"], ascending=[False, True])
+        top17 = df_sorted.head(17)
+        return [tuple(row) for row in top17.values]
+
+    def get_player_count(self) -> int:
+        """Returns the number of unique players in the stats."""
+        return self.df["Player"].nunique()
+
+    def get_game_count(self) -> int:
+        """Returns the total number of games recorded in the stats."""
+        return len(self.df)

@@ -1,7 +1,9 @@
 import pygame
 from scenes.scene import Scene
 from scenes.human_scene import HumanScene
-from scenes.game_settings import GameSettings
+from scenes.game_settings_scene import GameSettings
+from scenes.stats_scene import StatsScene
+from scenes.agent_scene import AgentScene
 import render.button_render as button
 import const as c
 
@@ -17,20 +19,34 @@ class MainMenuScene(Scene):
         pos_x = (self.app.config.render.screen_width - 200) // 2
         pos_y = 250
 
-        self.start_button = button.Button(pos_x, pos_y, 200, 60,
+        self.start_button = button.Button(pos_x-150, pos_y, 200, 60,
                                           "Start Game",
                                           self.start_game,
                                           self.font,
                                           c.BLUE_BUTTON,
                                           c.BLUE_HOVER,
                                           c.BLUE_CLICK)
-        self.settings_button = button.Button(pos_x, pos_y + 150, 200, 60,
+        self.ai_button = button.Button(pos_x+150, pos_y, 200, 60,
+                                       "AI Game",
+                                       self.start_ai_game,
+                                       self.font,
+                                       c.BLUE_BUTTON,
+                                       c.BLUE_HOVER,
+                                       c.BLUE_CLICK)
+        self.settings_button = button.Button(pos_x+150, pos_y + 150, 200, 60,
                                              "Settings",
                                              self.open_settings,
                                              self.font,
                                              c.BLUE_BUTTON,
                                              c.BLUE_HOVER,
                                              c.BLUE_CLICK)
+        self.stats_button = button.Button(pos_x-150, pos_y + 150, 200, 60,
+                                          "Stats",
+                                          self.open_stats,
+                                          self.font,
+                                          c.BLUE_BUTTON,
+                                          c.BLUE_HOVER,
+                                          c.BLUE_CLICK)
         self.quit_button = button.Button(pos_x, pos_y + 300, 200, 60,
                                          "Quit",
                                          self.quit_game,
@@ -40,18 +56,24 @@ class MainMenuScene(Scene):
                                          c.RED_CLICK)
 
         self.buttons = [self.start_button,
+                        self.ai_button,
                         self.settings_button,
+                        self.stats_button,
                         self.quit_button]
         self.buttons_index = 0
         self.start_button.hovered = True
 
     def start_game(self):
         self.app.change_scene(HumanScene(self.app))
-        pass
+
+    def start_ai_game(self):
+        self.app.change_scene(AgentScene(self.app))
 
     def open_settings(self):
         self.app.change_scene(GameSettings(self.app))
-        pass
+
+    def open_stats(self):
+        self.app.change_scene(StatsScene(self.app))
 
     def quit_game(self):
         self.app.running = False
@@ -74,13 +96,13 @@ class MainMenuScene(Scene):
                     % len(self.buttons)
                     )
                 self.buttons[self.buttons_index].hovered = True
-            elif event.key == pygame.K_RETURN:
-                if self.start_button.hovered:
-                    self.start_game()
-                elif self.settings_button.hovered:
-                    self.open_settings()
-                elif self.quit_button.hovered:
-                    self.quit_game()
+            # elif event.key == pygame.K_RETURN:
+            #     if self.start_button.hovered:
+            #         self.start_game()
+            #     elif self.settings_button.hovered:
+            #         self.open_settings()
+            #     elif self.quit_button.hovered:
+            #         self.quit_game()
             elif event.key == pygame.K_ESCAPE:
                 self.quit_game()
 
@@ -94,5 +116,7 @@ class MainMenuScene(Scene):
         screen.blit(title, title.get_rect(
             center=(self.app.config.render.screen_width // 2, 100)))
         self.start_button.draw(screen)
+        self.ai_button.draw(screen)
         self.settings_button.draw(screen)
+        self.stats_button.draw(screen)
         self.quit_button.draw(screen)

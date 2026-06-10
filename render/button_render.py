@@ -43,3 +43,7 @@ class Button:
             self.clicked = True
             self.click_timer = pygame.time.get_ticks()
             self.callback()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                if self.hovered:
+                    self.callback()
