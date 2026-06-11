@@ -83,19 +83,20 @@ class AISettings(Scene):
         board_size_text = self.font.render(
             f"BOARD SIZE: {size}/{c.CELLS_OPTIONS[-1]}", True, c.WHITE)
         speed_text = self.font.render(f"SPEED: {speed}", True, c.WHITE)
-        
+
         screen.blit(board_size_text, board_size_text.get_rect(
             center=(self.screen_width // 2, 150)))
         screen.blit(speed_text, speed_text.get_rect(
             center=(self.screen_width // 2, 200)))
-        
+
         model_title = self.font.render("SELECT MODEL:", True, c.WHITE)
         screen.blit(model_title, model_title.get_rect(top=250, left=50))
 
         for i, model in enumerate(self.models):
             color = c.YELLOW if i == self.model_index else c.LIGHT_GRAY
             model_text = self.font.render(f"Model: {model}", True, color)
-            screen.blit(model_text, model_text.get_rect(top=300+ i * 30, left=50))
+            screen.blit(
+                model_text, model_text.get_rect(top=300+i * 30, left=50))
 
         instructions = "[← →] to change board size\n"
         instructions += "[↑ ↓] to adjust speed\n"
