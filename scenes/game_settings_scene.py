@@ -10,7 +10,7 @@ class GameSettings(Scene):
         return self.app.config.game.nb_cells
 
     @nb_cells.setter
-    def nb_cells(self, value):
+    def nb_cells(self, value: int):
         self.app.config.game.nb_cells = value
 
     @property
@@ -18,7 +18,7 @@ class GameSettings(Scene):
         return self.app.config.render.ms
 
     @speed.setter
-    def speed(self, value):
+    def speed(self, value: int):
         self.app.config.render.ms = value
 
     @property

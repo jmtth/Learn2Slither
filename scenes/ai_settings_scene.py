@@ -12,7 +12,7 @@ class AISettings(Scene):
         return self.app.config.game.nb_cells
 
     @nb_cells.setter
-    def nb_cells(self, value):
+    def nb_cells(self, value: int):
         self.app.config.game.nb_cells = value
 
     @property

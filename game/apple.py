@@ -8,7 +8,7 @@ class Apple:
 
     Apples can be either green (good) or red (bad).
       """
-    def __init__(self, color, position):
+    def __init__(self, color: tuple[int, int, int], position: tuple[int, int]):
         self.color = color
         self.position = position
 

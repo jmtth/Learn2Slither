@@ -1,8 +1,11 @@
 from game.state import State, Object
+from game.snake_env import SnakeEnv
+from ai.Qlearning_agent import QLearningAgent
+from game.state import State
 
 
 class SnakeAgent:
-    def __init__(self, env, agent):
+    def __init__(self, env: SnakeEnv, agent: QLearningAgent):
         self.env = env
         self.agent = agent
 
@@ -95,7 +98,7 @@ class SnakeAgent:
         print(self.agent.q_table)
         self.agent.save_model(episodes)
 
-    def learn_step(self, state):
+    def learn_step(self, state: State):
         """Performs a single learning step for the Q-learning agent.
         This is used for training in the visual mode where the game loop
         is controlled by the AgentScene."""
@@ -113,7 +116,7 @@ class SnakeAgent:
             done
         )
 
-    def play_step(self, state):
+    def play_step(self, state: State):
         """Performs a single step for the Q-learning agent without learning.
         This is used for playing in the visual mode where the game loop
         is controlled by the AgentScene."""

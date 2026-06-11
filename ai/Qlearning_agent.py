@@ -3,6 +3,7 @@ import pickle
 import const as c
 from game.state import State, QTable
 
+
 class QLearningAgent:
     def __init__(self, name, model=None):
         q_table = self.load_model(model) if model else None

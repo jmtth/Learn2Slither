@@ -1,9 +1,15 @@
 import const as c
 import pygame
+from config import AppConfig
 
 
 class Popup:
-    def __init__(self, message, font, config, width=400, height=150):
+    def __init__(self,
+                 message: str,
+                 font,
+                 config: AppConfig,
+                 width=400,
+                 height=150):
         self.config = config
         self.message = message
         self.font = font
@@ -15,9 +21,9 @@ class Popup:
             width, height)
         self.active = False
 
-    def show(self, message=None):
+    def show(self, message: str = ""):
         self.active = True
-        if message:
+        if message != "":
             self.message = message
 
     def hide(self):

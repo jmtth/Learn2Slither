@@ -1,9 +1,10 @@
 import random
+from config import GameConfig
 
 
 class Snake:
     """Represents the snake in the game."""
-    def __init__(self, config):
+    def __init__(self, config: GameConfig):
         self.body = []
         self.direction = (-1, 0)  # Initial direction: moving right
         self.size = config.initial_size
@@ -12,7 +13,7 @@ class Snake:
                     random.randrange(config.nb_cells)]
         self.make_body(position)
 
-    def make_body(self, position):
+    def make_body(self, position: list[int]):
         """Initializes the snake's body based
         on the initial position and size.
         """
@@ -64,7 +65,7 @@ class Snake:
         if (new_direction[0] * -1, new_direction[1] * -1) != self.direction:
             self.direction = new_direction
 
-    def set_direction(self, action):
+    def set_direction(self, action: str):
         """Sets the snake's direction based on the given action."""
         match action:
             case "UP":

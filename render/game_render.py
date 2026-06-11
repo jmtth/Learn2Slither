@@ -1,16 +1,20 @@
 import pygame
 import const as c
 from render.popup_render import Popup
+from config import AppConfig
+from game.snake_env import SnakeEnv
+from game.snake import Snake
+from game.apple import Apple
 
 
 class GameRender:
     """Responsible for rendering the game state to the screen. """
-    def __init__(self, config):
+    def __init__(self, config: AppConfig):
         self.config = config
         self.gameover_shown = False
         self.pause_shown = False
 
-    def draw(self, screen, env):
+    def draw(self, screen, env: SnakeEnv):
         """Draws the current game state to the screen,
         including the grid, snake, fruits, and menu.
 
@@ -53,7 +57,7 @@ class GameRender:
                 c.GRID_LINE_WIDTH
             )
 
-    def draw_snake(self, screen, snake):
+    def draw_snake(self, screen, snake: Snake):
         """Draws the snake on the screen by
         iterating through its body segments.
         """
@@ -67,7 +71,7 @@ class GameRender:
                  cell_size, cell_size)
             )
 
-    def draw_fruits(self, screen, fruits):
+    def draw_fruits(self, screen, fruits: list[Apple]):
         """Draws the fruits on the screen by
         iterating through the list of fruits.
         """
@@ -81,7 +85,7 @@ class GameRender:
                  cell_size, cell_size)
             )
 
-    def draw_menu(self, screen, env):
+    def draw_menu(self, screen, env: SnakeEnv):
         """Draws the menu area below the game area,
         displaying the current score and snake length.
         """

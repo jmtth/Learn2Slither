@@ -42,7 +42,7 @@ class SnakeEnv:
         self.move_count += 1
         return reward, self.game_over
 
-    def spawn_fruit(self, color):
+    def spawn_fruit(self, color: tuple[int, int, int]):
         """Spawns a new fruit of the given color at a random position
         not occupied by the snake or other fruits.
         """
@@ -113,7 +113,7 @@ class SnakeEnv:
             return c.DEATH_REWARD
         return 0
 
-    def vision(self, fruits):
+    def vision(self, fruits: list[Apple]):
         """Generates a vision grid for the snake,
         showing the relative positions.
         """
@@ -150,7 +150,7 @@ class SnakeEnv:
 
         return vision_data
 
-    def print_vision(self, fruits):
+    def print_vision(self, fruits: list[Apple]):
         """Prints the vision grid to the console."""
         vision_data = self.vision(fruits)
         for row in vision_data:

@@ -96,13 +96,6 @@ class MainMenuScene(Scene):
                     % len(self.buttons)
                     )
                 self.buttons[self.buttons_index].hovered = True
-            # elif event.key == pygame.K_RETURN:
-            #     if self.start_button.hovered:
-            #         self.start_game()
-            #     elif self.settings_button.hovered:
-            #         self.open_settings()
-            #     elif self.quit_button.hovered:
-            #         self.quit_game()
             elif event.key == pygame.K_ESCAPE:
                 self.quit_game()
 
