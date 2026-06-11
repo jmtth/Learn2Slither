@@ -19,6 +19,56 @@ L'agent apprend par essais et erreurs en interagissant avec son environnement. �
 | Pandas | Analyse et traitement des statistiques d'entraînement |
 | Q-Learning | Algorithme d'apprentissage par renforcement basé sur l'équation de Bellman |
 
+```bash
+.
+├── ai
+│   ├── Qlearning_agent.py
+│   └── snake_agent.py
+├── assets
+│   ├── GameSettings.png
+│   ├── GameStats.png
+│   ├── IASettings.png
+│   ├── Menu.png
+│   ├── PressStart2P-Regular.ttf
+│   └── Snake.png
+├── controllers
+│   ├── agent_controller.py
+│   └── human_controller.py
+├── game
+│   ├── apple.py
+│   ├── snake.py
+│   ├── snake_env.py
+│   └── state.py
+├── models
+│   ├── q_table_10.pkl
+│   ├── q_table_100.pkl
+│   ├── q_table_1000.pkl
+│   ├── q_table_10000.pkl
+│   ├── q_table_20000.pkl
+│   └── q_table_error.pkl
+├── render
+│   ├── button_render.py
+│   ├── game_render.py
+│   └── popup_render.py
+├── scenes
+│   ├── agent_scene.py
+│   ├── ai_settings_scene.py
+│   ├── game_settings_scene.py
+│   ├── human_scene.py
+│   ├── mainmenu_scene.py
+│   ├── scene.py
+│   └── stats_scene.py
+├── stats
+│   └── manage_csv.py
+├── app.py
+├── config.py
+├── const.py
+├── parser.py
+├── README.md
+└── requirements.txt
+
+```
+
 
 ## Installation
 
