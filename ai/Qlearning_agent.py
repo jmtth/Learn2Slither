@@ -1,7 +1,7 @@
 import random
 import pickle
 import const as c
-
+from game.state import State, QTable
 
 class QLearningAgent:
     def __init__(self, name, model=None):
@@ -79,5 +79,31 @@ class QLearningAgent:
             path = f"{c.MODELS_DIR}{path}.pkl"
         else:
             path = f"{c.MODELS_DIR}{path}"
-        with open(path, "rb") as file:
-            return pickle.load(file)
+        try:
+            with open(path, "rb") as file:
+                try:
+                    q_table = pickle.load(file)
+                    self.q_table_type_check(q_table)
+                    return q_table
+                except (pickle.UnpicklingError, EOFError, TypeError) as e:
+                    print(
+                        f"Model file '{path}' is corrupted. {e}")
+        except FileNotFoundError:
+            print(f"Model file '{path}' not found.")
+
+    def q_table_type_check(self, q_table: QTable):
+        """Checks if the loaded Q-table has the correct structure."""
+        if not isinstance(q_table, dict):
+            raise TypeError("Q-table must be a dictionary.")
+        for state, actions in q_table.items():
+            if not isinstance(state, State):
+                raise TypeError("Q-table keys must be of type State.")
+            if not isinstance(actions, dict):
+                raise TypeError(
+                    "Q-table values must be dictionaries of action values.")
+            for action, value in actions.items():
+                if action not in ['UP', 'DOWN', 'LEFT', 'RIGHT']:
+                    raise TypeError(f"Invalid action '{action}' in Q-table.")
+                if not isinstance(value, (int, float)):
+                    raise TypeError(
+                        f"Q-value for action '{action}' must be a number.")
