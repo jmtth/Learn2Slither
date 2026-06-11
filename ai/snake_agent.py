@@ -1,7 +1,6 @@
 from game.state import State, Object
 from game.snake_env import SnakeEnv
 from ai.Qlearning_agent import QLearningAgent
-from game.state import State
 
 
 class SnakeAgent:
