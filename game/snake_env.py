@@ -11,7 +11,8 @@ import os
 class SnakeEnv:
     """Represents the game environment for the Snake game."""
     def __init__(self, config):
-        self.config = config
+        self.config = config.game
+        self.ai_config = config.ai
         self.reset()
 
     def reset(self):
@@ -175,3 +176,10 @@ class SnakeEnv:
                              self.snake.get_size(),
                              self.green_apples_eaten,
                              self.red_apples_eaten])
+        if not self.ai_config.learn:
+            message = f"{c.T_GREEN}Score saved to scores.csv : {c.T_RESET}"
+            message += f"Moves: {self.move_count}, "
+            message += f"Length: {self.snake.get_size()}, "
+            message += f"Green Apples: {self.green_apples_eaten}, "
+            message += f"Red Apples: {self.red_apples_eaten}"
+            print(message)

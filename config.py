@@ -29,6 +29,7 @@ class AiConfig:
     load_name: str | None = None
     learn: bool = True
     step_by_step: bool = False
+    agent_name: str = "Agent"
 
 
 @dataclass

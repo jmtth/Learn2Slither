@@ -10,7 +10,7 @@ class HumanScene(Scene):
     def __init__(self, app):
         super().__init__(app)
         self.pending_action = None
-        self.env = SnakeEnv(app.config.game)
+        self.env = SnakeEnv(app.config)
         self.gameover = self.env.game_over
         self.pause = self.env.paused
         self.renderer = GameRender(app.config)

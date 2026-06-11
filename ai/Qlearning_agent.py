@@ -4,7 +4,7 @@ import const as c
 
 
 class QLearningAgent:
-    def __init__(self, model=None):
+    def __init__(self, name, model=None):
         q_table = self.load_model(model) if model else None
         self.q_table = q_table if q_table is not None else {}
         self.epsilon = 1.0
@@ -13,6 +13,7 @@ class QLearningAgent:
         self.alpha = 0.1
         self.gamma = 0.9
         self.actions = ["UP", "DOWN", "LEFT", "RIGHT"]
+        self.name = name
 
     def get_q_values(self, state):
         """Returns the Q-values for the given state,
@@ -71,7 +72,7 @@ class QLearningAgent:
     def save_model(self, episodes=10):
         with open(f"{c.MODELS_DIR}q_table_{episodes}.pkl", "wb") as file:
             pickle.dump(self.q_table, file)
-        print(self.q_table)
+        # print(self.q_table)
 
     def load_model(self, path: str = "q_table_10.pkl"):
         if not path.endswith(".pkl"):

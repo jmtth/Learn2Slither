@@ -27,13 +27,18 @@ class AISettings(Scene):
     def screen_width(self):
         return self.app.config.render.screen_width
 
+    @property
+    def screen_height(self):
+        return self.app.config.render.screen_height
+
     def __init__(self, app):
         self.app = app
         self.app.config.ai.sessions = 0
         self.app.config.ai.learn = False
         self.nb_cells_index = 0
         self.speed_index = 0
-        self.models = os.listdir(c.MODELS_DIR)
+        # Load 9 models from the models directory
+        self.models = os.listdir(c.MODELS_DIR)[0:9]
         self.model_index = 0
         self.font = pygame.font.Font(
             "assets/PressStart2P-Regular.ttf", 18)
@@ -92,6 +97,9 @@ class AISettings(Scene):
         model_title = self.font.render("SELECT MODEL:", True, c.WHITE)
         screen.blit(model_title, model_title.get_rect(top=250, left=50))
 
+        rect = pygame.Rect(
+            25, 280, self.screen_width - 50, self.screen_height - 450)
+        pygame.draw.rect(screen, c.DARK_GRAY, rect, border_radius=8)
         for i, model in enumerate(self.models):
             color = c.YELLOW if i == self.model_index else c.LIGHT_GRAY
             model_text = self.font.render(f"Model: {model}", True, color)
@@ -106,4 +114,4 @@ class AISettings(Scene):
         for i, line in enumerate(lines):
             txt = self.font_instructions.render(line, True, (180, 180, 180))
             screen.blit(txt, txt.get_rect(
-                center=(self.screen_width // 2, 550 + i * 30)))
+                center=(self.screen_width // 2, 620 + i * 30)))

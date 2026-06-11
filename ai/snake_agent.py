@@ -81,7 +81,7 @@ class SnakeAgent:
                     next_state = self.get_state()
                 else:
                     next_state = state
-                    self.env.save_score(f"Agent-{episodes}")
+                    self.env.save_score(f"{self.agent.name}-{episodes}")
                 self.agent.learn(
                     state,
                     action,
@@ -92,6 +92,7 @@ class SnakeAgent:
                 state = next_state
             self.agent.decay_epsilon()
 
+        print(self.agent.q_table)
         self.agent.save_model(episodes)
 
     def learn_step(self, state):
@@ -118,3 +119,16 @@ class SnakeAgent:
         is controlled by the AgentScene."""
         action = self.agent.best_action(state)
         self.env.step(action)
+
+    def play(self, episodes: int):
+        """Plays a full game using the Q-learning agent without learning.
+        This is used for playing in the visual mode where the game loop
+        is controlled by the AgentScene."""
+        for _ in range(episodes):
+            self.env.reset()
+            while not self.env.game_over:
+                state = self.get_state()
+                action = self.agent.best_action(state)
+                self.env.step(action)
+                if self.env.game_over:
+                    self.env.save_score(f"{self.agent.name}-{episodes}")

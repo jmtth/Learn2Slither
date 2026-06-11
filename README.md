@@ -1,23 +1,23 @@
 # Learn2Slither
 
-Projet réalisé dans le cadre du cursus post tronc commun de l'école 42 Angoulême.
+Project developed as part of the post-core curriculum at 42 Angouleme.
 
 ---
 
 ## Description
 
-Learn2Slither est un projet d'apprentissage par renforcement dont l'objectif est d'entraîner un agent IA à jouer au jeu Snake de manière autonome.
+Learn2Slither is a reinforcement learning project whose goal is to train an AI agent to play the Snake game autonomously.
 
-L'agent apprend par essais et erreurs en interagissant avec son environnement. À chaque action effectuée, il reçoit une récompense ou une pénalité lui permettant d'améliorer progressivement sa stratégie grâce à l'algorithme de Q-Learning.
+The agent learns through trial and error by interacting with its environment. After each action, it receives a reward or a penalty that helps it gradually improve its strategy using the Q-Learning algorithm.
 
 ## Stack & Architecture
 
-| Technologie | Utilisation |
-|------------|-------------|
-| Python | Langage principal du projet |
-| Pygame | Gestion du rendu graphique et des interactions |
-| Pandas | Analyse et traitement des statistiques d'entraînement |
-| Q-Learning | Algorithme d'apprentissage par renforcement basé sur l'équation de Bellman |
+| Technology | Purpose |
+|------------|---------|
+| Python | Main language of the project |
+| Pygame | Graphics rendering and input handling |
+| Pandas | Training statistics analysis and processing |
+| Q-Learning | Reinforcement learning algorithm based on Bellman's equation |
 
 ```bash
 .
@@ -77,7 +77,7 @@ python3 -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Lancement de l'agent
+## Running the Agent
 
 ```bash
 ❯ python app.py -h    
@@ -100,22 +100,22 @@ options:
 
 ## Q-Learning
 
-Le Q-Learning est un algorithme d'apprentissage par renforcement permettant à un agent d'apprendre une politique optimale sans connaissance préalable de l'environnement.
+Q-Learning is a reinforcement learning algorithm that allows an agent to learn an optimal policy without prior knowledge of the environment.
 
-L'algorithme repose sur l'équation de Bellman :
+The algorithm is based on Bellman's equation:
 
 ```python
-Q(s, a) = Q(s, a) + α × (reward + γ × max(Q(s', a')) − Q(s, a))
+Q(s, a) = Q(s, a) + alpha * (reward + gamma * max(Q(s', a')) - Q(s, a))
 ```
-où :
-- **s** : état courant
-- **a** : action effectuée
-- **reward** : récompense obtenue
-- **s'** : nouvel état
-- **α** : taux d'apprentissage (*learning rate*)
-- **γ** : facteur de réduction (*discount factor*)
+where:
+- **s**: current state
+- **a**: action taken
+- **reward**: reward received
+- **s'**: new state
+- **α**: learning rate
+- **γ**: discount factor
 
-L'objectif est de construire une **Q-table** contenant une estimation de la qualité de chaque action pour chaque état rencontré :
+The goal is to build a **Q-table** that stores an estimate of how good each action is for every encountered state:
 
 ```python
 q_table[state] = {
@@ -126,61 +126,60 @@ q_table[state] = {
 }
 ```
 
-### Choix du state
+### State Design
 
+**Designing the state space**
 
-**Conception de l'espace d'états**
+The main challenge in Q-Learning is to define a state that is descriptive enough for the agent to make good decisions while keeping the state space manageable.
 
-La principale difficulté du Q-Learning consiste à définir un état suffisamment descriptif pour permettre à l'agent de prendre de bonnes décisions tout en conservant un espace d'états raisonnable.
+A state that is too simple loses important information.
 
-Un état trop simple entraîne une perte d'informations importantes.
+A state that is too complex dramatically increases the number of possible combinations and slows down learning.
 
-Un état trop complexe augmente fortement le nombre de combinaisons possibles et ralentit l'apprentissage.
+**Order of magnitude**
 
-**Ordre de grandeur**
+| State space size | Convergence |
+|------------------|-------------|
+| < 10,000 | Fast |
+| 10,000 - 100,000 | Acceptable |
+| > 1,000,000 | Tabular Q-Learning is not well suited |
 
-| Taille de l'espace d'états | Convergence |
-|---------------------------|-------------|
-| < 10 000 | Rapide |
-| 10 000 – 100 000 | Acceptable |
-| > 1 000 000 | Q-Learning tabulaire peu adapté |
+> A good state encodes only the information needed for decision-making. It should maximize relevance while minimizing the number of possible combinations.
 
-> Un bon état encode uniquement les informations nécessaires à la prise de décision. Il doit maximiser la pertinence tout en minimisant le nombre de combinaisons possibles.
+**Curse of dimensionality**
 
-**Malédiction de la dimensionnalité**
-
-Chaque variable ajoutée multiplie le nombre total d'états :
+Each added variable multiplies the total number of states:
 
 ```text
-4 dangers (booléens)  ->      16 états
-+ direction           ->      64 états
-+ position exacte     ->   64 000 états
+4 dangers (booleans)  ->      16 states
++ direction           ->      64 states
++ exact position      ->   64,000 states
 ```
 
-### Mon state
+### My State
 
-**État utilisé dans Learn2Slither**
+**State used in Learn2Slither**
 
-L'état retenu encode :
+The chosen state encodes:
 
-- les dangers immédiats autour de la tête ;
-- la direction actuelle du serpent ;
-- une vision simplifiée dans les quatre directions cardinales:
-  - Premier élément rencontré dans la direction
-  - W , G , R
-  - S est considéré comme W
-  - R si snake.size() <= 2 est considéré comme W
+- immediate dangers around the snake's head;
+- the snake's current direction;
+- a simplified vision in the four cardinal directions:
+  - first object encountered in the direction
+  - W, G, R
+  - S is considered W
+  - R, if snake.size() <= 2, is considered W
 
-### Décomposition
+### Breakdown
 
-| Composant | Combinaisons |
-|-----------|-------------|
-| Dangers (4 booléens) | 2⁴ = 16 |
-| Direction courante | 4 |
-| Vision simplifiée (4 directions, 3 valeurs possibles) | 3⁴ = 81 |
-| **Total** | **5 184 états** |
+| Component | Combinations |
+|-----------|--------------|
+| Dangers (4 booleans) | 2^4 = 16 |
+| Current direction | 4 |
+| Simplified vision (4 directions, 3 possible values) | 3^4 = 81 |
+| **Total** | **5,184 states** |
 
-### Exemple
+### Example
 
 ```python
 State(
@@ -192,31 +191,29 @@ State(
     left="W"
 )
 
-Valeur {'UP': 0.0, 'DOWN': 0.0, 'LEFT': 0.0, 'RIGHT': 0.0}
+Value {'UP': 0.0, 'DOWN': 0.0, 'LEFT': 0.0, 'RIGHT': 0.0}
 ```
 
-**Récompenses**
+**Rewards**
 
-L'agent reçoit des récompenses afin d'orienter son apprentissage :
+The agent receives rewards to guide its learning:
 
-| Événement | Récompense |
-|-----------|------------|
-| Consommation d'une pomme verte | +10 |
-| Consommation d'une pomme rouge | -5|
-| Consommation d'une pomme rouge si trop petit | -10|
-| Survie d'un tour | -0.01 |
-| Passage à une taille 0 |-100 |
-| Collision avec un mur | -100 |
-| Collision avec lui-même | -100 |
+| Event | Reward |
+|-------|--------|
+| Eating a green apple | +10 |
+| Eating a red apple | -5 |
+| Eating a red apple when too small | -10 |
+| Surviving one turn | -0.01 |
+| Reaching size 0 | -100 |
+| Collision with a wall | -100 |
+| Collision with itself | -100 |
 
-Ces récompenses permettent à l'agent d'apprendre progressivement les comportements favorables à sa survie et à l'obtention d'un score élevé.
+These rewards allow the agent to gradually learn behaviors that improve survival and achieve a higher score.
 
-## Aperçu du jeu
+## Game Preview
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/GameSettings.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/IASettings.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/Snake.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/GameStats.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
-
-

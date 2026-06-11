@@ -1,14 +1,17 @@
 from parser import Parser
 import pygame
+import random
+import string
 from scenes.mainmenu_scene import MainMenuScene
 from scenes.agent_scene import AgentScene
 from config import AppConfig
+from scenes.scene import Scene
 from stats.manage_csv import MyStats
 import const as c
 
 
 class App:
-    def __init__(self, scene, config):
+    def __init__(self, scene: type[Scene], config: AppConfig):
         self.config = config
         pygame.init()
         pygame.display.set_caption('Learn2Slither Snake')
@@ -23,7 +26,7 @@ class App:
         self.score = 0
         self.pause = True
 
-    def change_scene(self, scene):
+    def change_scene(self, scene: Scene):
         self.scene = scene
 
     def run(self):
@@ -40,7 +43,12 @@ class App:
             pygame.display.flip()
 
 
-def load_ai_config(args):
+def generate_id() -> str:
+    """Generate a random ID consisting of 15 lowercase letters."""
+    return "".join(random.choices(string.ascii_lowercase, k=8))
+
+
+def load_ai_config(args) -> AppConfig:
     """ Loads AI configuration from command-line
     arguments into the AppConfig.
     """
@@ -51,13 +59,14 @@ def load_ai_config(args):
     app_config.ai.save_name = args.save
     app_config.ai.learn = not args.dontlearn
     app_config.ai.step_by_step = args.step_by_step
+    app_config.ai.agent_name = generate_id()
     return app_config
 
 
-def print_stats(config, player="Agent"):
+def print_stats(config):
     """ Prints training statistics after AI training is completed. """
     stats = MyStats()
-    player = f"{player}-{config.ai.sessions}"
+    player = f"{config.ai.agent_name}-{config.ai.sessions}"
     max_length, max_moves = stats.get_sessions_stat(player)
     stats_message = f"{c.T_GREEN}\nTraining completed: {c.T_RESET}"
     stats_message += f"Max length: {max_length}, "
@@ -67,6 +76,18 @@ def print_stats(config, player="Agent"):
     model_path = f"{c.MODELS_DIR}{config.ai.save_name}"
     model_path += f"_{str(config.ai.sessions)}.pkl"
     print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
+
+
+def print_info(function, config, pargs):
+    def wrapper(*args, **kwargs):
+        if config.ai.learn:
+            print(f"\nStarting training for {pargs.sessions} sessions...\n")
+            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
+        result = function(*args, **kwargs)
+        if config.ai.learn:
+            print_stats(config)
+        return result
+    return wrapper
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -80,22 +101,20 @@ def main(argv: list[str] | None = None) -> int:
         config = load_ai_config(args)
         if args.visual == "on":
             game = App(AgentScene, config)
-            print(f"\nStarting training for {args.sessions} sessions...\n")
-            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
-            game.run()
-            print_stats(config, player="AgentV")
+            print_info(game.run, config, args)()
             pygame.quit()
         else:
             from ai.Qlearning_agent import QLearningAgent
             from game.snake_env import SnakeEnv
             from ai.snake_agent import SnakeAgent
-            env = SnakeEnv(config.game)
-            agent = QLearningAgent(config.ai.load_name)
+            env = SnakeEnv(config)
+            agent = QLearningAgent(config.ai.agent_name, config.ai.load_name)
             trainer = SnakeAgent(env, agent)
-            print(f"\nStarting training for {args.sessions} sessions...\n")
-            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
-            trainer.train(args.sessions)
-            print_stats(config, player="Agent")
+            if config.ai.learn:
+                print_info(trainer.train, config, args)(args.sessions)
+            else:
+                print(f"\nStarting evaluation for {args.sessions} episodes.\n")
+                trainer.play(args.sessions)
     return 0
 
 

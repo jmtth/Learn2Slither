@@ -59,7 +59,7 @@ class StatsScene(Scene):
         screen.blit(text_surf, text_rect)
         list_stats = [] if self.stats.df.empty else self.stats.get_top_scores()
         for i, stat in enumerate(list_stats):
-            stat_text = f"{stat[0]:<11}| {stat[1]:^8} | "
+            stat_text = f"{stat[0][:11]:<11}| {stat[1]:^8} | "
             stat_text += f"{stat[2]:^9} | {stat[3]:^8}"
             if i == 0:
                 color = c.YELLOW

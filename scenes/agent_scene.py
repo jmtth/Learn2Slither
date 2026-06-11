@@ -11,9 +11,10 @@ class AgentScene(Scene):
     """Scene for training and evaluating the AI agent. """
     def __init__(self, app):
         super().__init__(app)
-        self.env = SnakeEnv(app.config.game)
+        self.env = SnakeEnv(app.config)
         self.renderer = GameRender(app.config)
-        self.LearningAgent = QLearningAgent(app.config.ai.load_name)
+        self.LearningAgent = QLearningAgent(app.config.ai.agent_name,
+                                            app.config.ai.load_name)
         self.SnakeAgent = SnakeAgent(self.env, self.LearningAgent)
         self.controller = AgentController()
         self.episode = 0
@@ -33,7 +34,8 @@ class AgentScene(Scene):
             if event.key == pygame.K_s:
                 self.step_key = True
             elif event.key == pygame.K_ESCAPE:
-                self.app.running = False
+                from scenes.ai_settings_scene import AISettings
+                self.app.change_scene(AISettings(self.app))
 
     def update(self):
         if self.app.config.ai.learn:
@@ -51,11 +53,13 @@ class AgentScene(Scene):
         """
         self.SnakeAgent.learn_step(self.SnakeAgent.get_state())
         if self.env.game_over:
-            self.env.save_score(f"AgentV-{self.app.config.ai.sessions}")
+            self.env.save_score(
+                f"{self.SnakeAgent.agent.name}-{self.app.config.ai.sessions}")
             self.env.reset()
             self.episode += 1
             self.SnakeAgent.agent.decay_epsilon()
             if self.episode >= self.app.config.ai.sessions:
+                print(self.SnakeAgent.agent.q_table)
                 self.SnakeAgent.agent.save_model(self.episode)
                 self.app.running = False
 
@@ -83,4 +87,6 @@ class AgentScene(Scene):
                     self.SnakeAgent.play_step(self.SnakeAgent.get_state())
                     self.last_move_time = now
             if self.env.game_over:
-                self.env.save_score(f"AgentV-{self.app.config.ai.sessions}")
+                sessions_name = f"{self.SnakeAgent.agent.name}"
+                sessions_name += f"-{self.app.config.ai.sessions}"
+                self.env.save_score(sessions_name)
