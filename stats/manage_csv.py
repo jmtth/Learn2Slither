@@ -30,6 +30,9 @@ class MyStats:
         return data
 
     def get_sessions_stat(self, player="Agent") -> tuple[int, int, float]:
+        if self.df.empty:
+            print("Error: no data available to compute statistics.")
+            return 0, 0, 0.0
         max_length = self.df[self.df["Player"] == player]["Length"].max()
         max_moves = self.df[self.df["Player"] == player]["Moves"].max()
         mean_length = self.df[self.df["Player"] == player]["Length"].mean()
@@ -39,6 +42,9 @@ class MyStats:
             self, player="Agent"
             ) -> tuple[list[int], int, int]:
         """Returns a list of scores (lengths) for the specified player."""
+        if self.df.empty:
+            print("Error: no data available to compute scores.")
+            return [], 0, 0
         scores = self.df[self.df["Player"] == player]["Length"].tolist()
         min_score = min(scores)
         max_score = max(scores)
@@ -52,6 +58,9 @@ class MyStats:
             pd.DataFrame: A List containing the top 17 scores with columns
             "Player", "Moves", "Length", "Green Apples".
         """
+        if self.df.empty:
+            print("Error: no data available to compute top scores.")
+            return []
         df_filtered = self.df[["Player", "Moves", "Length", "Green Apples"]]
         df_sorted = df_filtered.sort_values(
             by=["Length", "Moves"], ascending=[False, True])
@@ -60,8 +69,14 @@ class MyStats:
 
     def get_player_count(self) -> int:
         """Returns the number of unique players in the stats."""
+        if self.df.empty:
+            print("Error: no data available to compute player count.")
+            return 0
         return self.df["Player"].nunique()
 
     def get_game_count(self) -> int:
         """Returns the total number of games recorded in the stats."""
+        if self.df.empty:
+            print("Error: no data available to compute game count.")
+            return 0
         return len(self.df)

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 from IPython import display
-import numpy as np
 
 plt.ion()
 
@@ -35,6 +34,12 @@ def save_DeepQlearning_plot(scores, mean_scores, filename="training_plot.png"):
 
 
 def plot_scores(scores, mean_score, min_score, max_score):
+    if len(scores) == 0:
+        print("Error: no scores available to plot.")
+        return
+    if mean_score is None or min_score is None or max_score is None:
+        print("Error: mean, min, or max score is None.")
+        return
     display.clear_output(wait=True)
     display.display(plt.gcf())
     plt.clf()

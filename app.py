@@ -1,3 +1,5 @@
+import sys
+
 from parser import Parser
 import pygame
 import random
@@ -96,6 +98,11 @@ def print_info(function, config: AppConfig, pargs):
 
 def main(argv: list[str] | None = None) -> int:
     args = Parser(argv).args
+    if sys.argv[1:] == []:
+        warning = f"{c.T_GREEN}Learn2Slither:"
+        warning += f" {c.T_RED}need at least one argument{c.T_RESET} {args}"
+        print(warning)
+        exit(0)
 
     if args.human:
         game = App(MainMenuScene, AppConfig())

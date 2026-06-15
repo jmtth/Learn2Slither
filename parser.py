@@ -69,6 +69,9 @@ class Parser:
         if self.args.sessions < 0 or self.args.sessions > 100000:
             self.parser.error(
                 "Number of sessions must be between 0 and 10,000.")
+        if not self.args.dontlearn and self.args.sessions == 0:
+            self.parser.error(
+                "sessions must be greater than 0 when learning is enabled.")
         if self.args.load:
             file_name = f"{c.MODELS_DIR}{self.args.load}.pkl"
             try:
