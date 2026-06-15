@@ -3,7 +3,7 @@ from game.snake_env import SnakeEnv
 from ai.Qlearning_agent import QLearningAgent
 
 
-class SnakeAgent:
+class SnakeTrainer:
     def __init__(self, env: SnakeEnv, agent: QLearningAgent):
         self.env = env
         self.agent = agent

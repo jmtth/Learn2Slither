@@ -117,10 +117,10 @@ def main(argv: list[str] | None = None) -> int:
         else:
             from ai.Qlearning_agent import QLearningAgent
             from game.snake_env import SnakeEnv
-            from ai.snake_agent import SnakeAgent
+            from ai.Snake_trainer import SnakeTrainer
             env = SnakeEnv(config)
             agent = QLearningAgent(config.ai.agent_name, config.ai.load_name)
-            trainer = SnakeAgent(env, agent)
+            trainer = SnakeTrainer(env, agent)
             if config.ai.learn:
                 print_info(trainer.train, config, args)(args.sessions)
             else:
