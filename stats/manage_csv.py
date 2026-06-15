@@ -29,10 +29,20 @@ class MyStats:
             return pd.DataFrame()
         return data
 
-    def get_sessions_stat(self, player="Agent") -> tuple[int, int]:
+    def get_sessions_stat(self, player="Agent") -> tuple[int, int, float]:
         max_length = self.df[self.df["Player"] == player]["Length"].max()
         max_moves = self.df[self.df["Player"] == player]["Moves"].max()
-        return max_length, max_moves
+        mean_length = self.df[self.df["Player"] == player]["Length"].mean()
+        return max_length, max_moves, mean_length
+
+    def get_sessions_scores(
+            self, player="Agent"
+            ) -> tuple[list[int], int, int]:
+        """Returns a list of scores (lengths) for the specified player."""
+        scores = self.df[self.df["Player"] == player]["Length"].tolist()
+        min_score = min(scores)
+        max_score = max(scores)
+        return scores, min_score, max_score
 
     def get_top_scores(self) -> list[tuple[str, int, int, int]]:
         """ Returns the top 17 scores sorted by length (descending)

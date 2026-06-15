@@ -8,6 +8,7 @@ from config import AppConfig
 from scenes.scene import Scene
 from stats.manage_csv import MyStats
 import const as c
+from stats.graph import plot_scores
 
 
 class App:
@@ -63,22 +64,25 @@ def load_ai_config(args) -> AppConfig:
     return app_config
 
 
-def print_stats(config):
+def print_stats(config: AppConfig):
     """ Prints training statistics after AI training is completed. """
     stats = MyStats()
     player = f"{config.ai.agent_name}-{config.ai.sessions}"
-    max_length, max_moves = stats.get_sessions_stat(player)
+    max_length, max_moves, mean_length = stats.get_sessions_stat(player)
     stats_message = f"{c.T_GREEN}\nTraining completed: {c.T_RESET}"
     stats_message += f"Max length: {max_length}, "
     stats_message += f"Max moves: {max_moves} "
+    stats_message += f"Mean length: {mean_length} "
     stats_message += f"in {config.ai.sessions} episodes"
     print(stats_message)
     model_path = f"{c.MODELS_DIR}{config.ai.save_name}"
     model_path += f"_{str(config.ai.sessions)}.pkl"
     print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
+    scores, min_score, max_score = stats.get_sessions_scores(player)
+    plot_scores(scores, mean_length, min_score, max_score)
 
 
-def print_info(function, config, pargs):
+def print_info(function, config: AppConfig, pargs):
     def wrapper(*args, **kwargs):
         if config.ai.learn:
             print(f"\nStarting training for {pargs.sessions} sessions...\n")
