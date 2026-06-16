@@ -60,6 +60,11 @@ class Parser:
             action="store_true",
             help="Play the game as a human player."
         )
+        parser.add_argument(
+            "-deep",
+            action="store_true",
+            help="Enable deep learning mode for the snake agent."
+        )
 
     def check_arguments(self):
         """Checks the validity of the parsed arguments."""
@@ -84,6 +89,9 @@ class Parser:
                             f"Model file '{file_name}' is corrupted.")
             except FileNotFoundError:
                 self.parser.error(f"Model file '{file_name}' not found.")
+        if self.args.step_by_step and not self.args.visual == "on":
+            self.parser.error(
+                "Step-by-step mode requires visual mode to be enabled.")
         if self.args.dontlearn and not self.args.load:
             self.parser.error(
                 "Cannot disable learning without loading a model.")

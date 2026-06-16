@@ -1,20 +1,14 @@
 import random
 import numpy as np
 from collections import deque
-from ai.DeepQLearning_model import DeepQModel
-from ai.DeepQLearning_agent import DeepQAgent
-from stats.graph import DeepQlearning_plot, save_DeepQlearning_plot
+from stats.graph import save_DeepQlearning_plot
 
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-INPUT_SIZE = 26
-HIDDEN_SIZE_1 = 128
-HIDDEN_SIZE_2 = 64
-OUTPUT_SIZE = 4
 
 
-class Agent:
+class SnakeDeepTrainer:
     """A Deep Q-Learning agent for the Snake game.
 
     This agent uses a neural network to approximate the Q-values
@@ -26,11 +20,6 @@ class Agent:
         self.env = env
         self.agent = agent
         self.memory = deque(maxlen=100_000)
-        self.model = DeepQModel(INPUT_SIZE,
-                                HIDDEN_SIZE_1,
-                                HIDDEN_SIZE_2,
-                                OUTPUT_SIZE)
-        self.trainer = DeepQAgent(self.model)
 
     def get_state(self):
         """Returns the current state of the game as a numpy array.
@@ -65,7 +54,7 @@ class Agent:
         state.extend([get_element_value(c) for c in vertical_vision])
         state.extend([head_x, head_y])
 
-        return np.array(state, dtype=int)
+        return np.array(state, dtype=np.float32)
 
     def remember(self, state, action, reward, next_state, done):
         """Stores the experience in the replay memory.
@@ -87,15 +76,15 @@ class Agent:
             mini_sample = self.memory
 
         states, actions, rewards, next_states, dones = zip(*mini_sample)
-        self.trainer.learn(states, actions, rewards, next_states, dones)
+        self.agent.learn(states, actions, rewards, next_states, dones)
         # Zip the mini_sample into separate lists for
         # states, actions, rewards, next_states, and dones
         # replaces the for loop below, which was commented out.
         # for state, action, reward, nexrt_state, done in mini_sample:
-        #    self.trainer.train_step(state, action, reward, next_state, done)
+        #    self.agent.train_step(state, action, reward, next_state, done)
 
     def train_short_memory(self, state, action, reward, next_state, done):
-        self.trainer.learn(state, action, reward, next_state, done)
+        self.agent.learn(state, action, reward, next_state, done)
 
     def train(self, episodes: int):
         plot_length = []
@@ -104,32 +93,91 @@ class Agent:
         total_length = 0
         record = 0
 
-        for episode in range(episodes):
-            current_state = self.get_state()
+        for _ in range(episodes):
+            self.env.reset()
+            done = False
 
-            action, action_index = self.agent.choose_action(current_state)
+            while not done:
+                current_state = self.get_state()
 
-            reward, done = self.env.play_step(action)
-            length = len(self.env.snake.body)
-            next_state = self.get_state()
+                action, action_index = self.agent.choose_action(current_state)
 
-            self.train_short_memory(current_state, action_index, reward, next_state, done)
-            self.remember(current_state, action_index, reward, next_state, done)
+                reward, done = self.env.step(action)
+                length = len(self.env.snake.body)
 
-            if done:
-                self.env.reset()
-                episode += 1
-                self.train_long_memory()
+                if not done:
+                    next_state = self.get_state()
+                else:
+                    next_state = current_state
 
-                if length > record:
-                    record = length
-                    self.model.save()
+                # self.train_short_memory(current_state,
+                #                         action_index,
+                #                         reward,
+                #                         next_state,
+                #                         done)
+                self.remember(current_state,
+                              action_index,
+                              reward,
+                              next_state,
+                              done)
+                if done:
+                    episode += 1
+                    self.train_long_memory()
+                    self.env.save_score(f"{self.agent.name}-{episodes}")
 
-                print('Game', episode, 'Length', length, 'Record:', record)
+                    if length > record:
+                        record = length
+                        self.agent.model.save()
 
-                plot_length.append(length)
-                total_length += length
-                mean_score = total_length / episode
-                plot_mean_length.append(mean_score)
-                DeepQlearning_plot(plot_length, plot_mean_length)
+                    # print('Game:',
+                    #       episode,
+                    #       'Length:',
+                    #       length,
+                    #       'Record:',
+                    #       record)
+
+                    plot_length.append(length)
+                    total_length += length
+                    mean_score = total_length / episode
+                    plot_mean_length.append(mean_score)
+                    # DeepQlearning_plot(plot_length, plot_mean_length)
+                self.agent.decay_epsilon()
         save_DeepQlearning_plot(plot_length, plot_mean_length)
+
+    def learn_step(self, state):
+        """Performs a single learning step for the Deep Q-learning agent.
+        This is used for training in the visual mode where the game loop"""
+        current_state = state
+        action, action_index = self.agent.choose_action(current_state)
+
+        reward, done = self.env.step(action)
+        next_state = self.get_state()
+
+        self.train_short_memory(current_state,
+                                action_index,
+                                reward,
+                                next_state,
+                                done)
+        self.remember(current_state, action_index, reward, next_state, done)
+
+        if done:
+            self.train_long_memory()
+
+    def play_step(self, state):
+        """Performs a single play step for the Deep Q-learning agent.
+        This is used for playing in the visual mode where the game loop
+        is controlled by the AgentScene."""
+        action, _ = self.agent.best_action(state)
+        self.env.step(action)
+
+    def play(self, episodes: int):
+        """Plays a full game using the Q-learning agent without learning.
+        This is used for playing in CLI mode."""
+        for _ in range(episodes):
+            self.env.reset()
+            while not self.env.game_over:
+                state = self.get_state()
+                action, _ = self.agent.best_action(state)
+                self.env.step(action)
+                if self.env.game_over:
+                    self.env.save_score(f"{self.agent.name}-{episodes}")

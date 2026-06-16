@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Any
 import const as c
 
 
@@ -30,6 +31,9 @@ class AiConfig:
     learn: bool = True
     step_by_step: bool = False
     agent_name: str = "Agent"
+    agent: Any | None = None
+    trainer: Any | None = None
+    deep: bool = False
 
 
 @dataclass

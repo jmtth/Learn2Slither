@@ -1,5 +1,4 @@
 import sys
-
 from parser import Parser
 import pygame
 import random
@@ -63,6 +62,23 @@ def load_ai_config(args) -> AppConfig:
     app_config.ai.learn = not args.dontlearn
     app_config.ai.step_by_step = args.step_by_step
     app_config.ai.agent_name = generate_id()
+    app_config.ai.deep = args.deep
+    from game.snake_env import SnakeEnv
+    env = SnakeEnv(app_config)
+    if args.deep:
+        from ai.DeepQLearning_agent import DeepQAgent
+        from ai.Snake_deep_trainer import SnakeDeepTrainer
+        app_config.ai.agent = DeepQAgent(app_config.ai.agent_name,
+                                         app_config.ai.load_name)
+        app_config.ai.trainer = SnakeDeepTrainer(env,
+                                                 app_config.ai.agent)
+    else:
+        from ai.Qlearning_agent import QLearningAgent
+        from ai.Snake_trainer import SnakeTrainer
+        app_config.ai.agent = QLearningAgent(app_config.ai.agent_name,
+                                             app_config.ai.load_name)
+        app_config.ai.trainer = SnakeTrainer(env,
+                                             app_config.ai.agent)
     return app_config
 
 
@@ -88,7 +104,8 @@ def print_info(function, config: AppConfig, pargs):
     def wrapper(*args, **kwargs):
         if config.ai.learn:
             print(f"\nStarting training for {pargs.sessions} sessions...\n")
-            print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
+            if not pargs.deep:
+                print(f"{c.T_GREEN}Q-table:{c.T_RESET}")
         result = function(*args, **kwargs)
         if config.ai.learn:
             print_stats(config)
@@ -104,30 +121,37 @@ def main(argv: list[str] | None = None) -> int:
         print(warning)
         exit(0)
 
+    config = load_ai_config(args)
     if args.human:
-        game = App(MainMenuScene, AppConfig())
+        game = App(MainMenuScene, config)
         game.run()
         pygame.quit()
     else:
-        config = load_ai_config(args)
         if args.visual == "on":
             game = App(AgentScene, config)
             print_info(game.run, config, args)()
             pygame.quit()
         else:
-            from ai.Qlearning_agent import QLearningAgent
-            from game.snake_env import SnakeEnv
-            from ai.Snake_trainer import SnakeTrainer
-            env = SnakeEnv(config)
-            agent = QLearningAgent(config.ai.agent_name, config.ai.load_name)
-            trainer = SnakeTrainer(env, agent)
+            # from ai.Qlearning_agent import QLearningAgent
+            # from game.snake_env import SnakeEnv
+            # from ai.Snake_trainer import SnakeTrainer
+            # env = SnakeEnv(config)
+            # agent = QLearningAgent(config.ai.agent_name, config.ai.load_name)
+            # trainer = SnakeTrainer(env, agent)
+            if config.ai.trainer is None:
+                raise RuntimeError("AI trainer is not initialized")
             if config.ai.learn:
-                print_info(trainer.train, config, args)(args.sessions)
+                print_info(
+                    config.ai.trainer.train, config, args)(args.sessions)
             else:
                 print(f"\nStarting evaluation for {args.sessions} episodes.\n")
-                trainer.play(args.sessions)
+                config.ai.trainer.play(args.sessions)
     return 0
 
 
 if __name__ == "__main__":
-    main()
+        # try:
+        #     main()
+        # except Exception as e:
+        #     print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
+        main()

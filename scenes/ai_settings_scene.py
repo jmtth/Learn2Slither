@@ -38,7 +38,12 @@ class AISettings(Scene):
         self.nb_cells_index = 0
         self.speed_index = 0
         # Load 9 models from the models directory
-        self.models = os.listdir(c.MODELS_DIR)[0:9]
+        files = os.listdir(c.MODELS_DIR)
+        if not app.config.ai.deep:
+            files = [f for f in files if f.endswith('.pkl')][:9]
+        else:
+            files = [f for f in files if f.endswith('.pth')][:9]
+        self.models = files
         self.model_index = 0
         self.font = pygame.font.Font(
             "assets/PressStart2P-Regular.ttf", 18)

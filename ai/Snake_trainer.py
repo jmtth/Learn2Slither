@@ -124,8 +124,7 @@ class SnakeTrainer:
 
     def play(self, episodes: int):
         """Plays a full game using the Q-learning agent without learning.
-        This is used for playing in the visual mode where the game loop
-        is controlled by the AgentScene."""
+        This is used for playing in CLI mode."""
         for _ in range(episodes):
             self.env.reset()
             while not self.env.game_over:

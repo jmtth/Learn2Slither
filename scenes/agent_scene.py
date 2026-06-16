@@ -2,7 +2,7 @@ import pygame
 from scenes.scene import Scene
 from render.game_render import GameRender
 from game.snake_env import SnakeEnv
-from ai.Snake_trainer import SnakeTrainer
+# from ai.Snake_trainer import SnakeTrainer
 from ai.Qlearning_agent import QLearningAgent
 from controllers.agent_controller import AgentController
 
@@ -13,9 +13,8 @@ class AgentScene(Scene):
         super().__init__(app)
         self.env = SnakeEnv(app.config)
         self.renderer = GameRender(app.config)
-        self.LearningAgent = QLearningAgent(app.config.ai.agent_name,
-                                            app.config.ai.load_name)
-        self.SnakeTrainer = SnakeTrainer(self.env, self.LearningAgent)
+        self.LearningAgent = app.config.ai.agent
+        self.SnakeTrainer = app.config.ai.trainer
         self.controller = AgentController()
         self.episode = 0
         self.last_move_time = 0
@@ -60,7 +59,8 @@ class AgentScene(Scene):
             self.episode += 1
             self.SnakeTrainer.agent.decay_epsilon()
             if self.episode >= self.app.config.ai.sessions:
-                print(self.SnakeTrainer.agent.q_table)
+                if isinstance(self.SnakeTrainer.agent, QLearningAgent):
+                    print(self.SnakeTrainer.agent.q_table)
                 self.SnakeTrainer.agent.save_model(self.episode)
                 self.app.running = False
 

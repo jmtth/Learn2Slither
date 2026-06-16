@@ -5,7 +5,12 @@ import os
 
 
 class DeepQModel(nn.Module):
-    def __init__(self, input_size, hidden_size_1, hidden_size_2, output_size):
+    def __init__(self,
+                 input_size: int,
+                 hidden_size_1: int,
+                 hidden_size_2: int,
+                 output_size: int,
+                 load_name: str | None = None):
         """A simple feedforward neural network for Deep Q-Learning.
 
         Args:
@@ -18,6 +23,8 @@ class DeepQModel(nn.Module):
         self.linear1 = nn.Linear(input_size, hidden_size_1)
         self.linear2 = nn.Linear(hidden_size_1, hidden_size_2)
         self.linear3 = nn.Linear(hidden_size_2, output_size)
+        if load_name:
+            self.load(load_name)
 
     def forward(self, x):
         x = F.relu(self.linear1(x))
