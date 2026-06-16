@@ -20,7 +20,7 @@ def DeepQlearning_plot(scores, mean_scores):
     plt.pause(.1)
 
 
-def save_DeepQlearning_plot(scores, mean_scores, filename="training_plot.png"):
+def save_DeepQlearning_plot(scores, mean_scores, filename="DQL_plot.png"):
     plt.clf()
     plt.title('Training...')
     plt.xlabel('Number of Games')
@@ -69,4 +69,4 @@ def plot_scores(scores, mean_score, min_score, max_score):
     plt.legend()
     plt.show()
     plt.pause(5)
-    plt.savefig("training_plot.png")
+    plt.savefig("QL_plot.png")

@@ -63,9 +63,9 @@ class Parser:
 
     def check_arguments(self):
         """Checks the validity of the parsed arguments."""
-        if self.args.sessions > 0 and self.args.human:
-            self.parser.error(
-                "Cannot enable both learning sessions and human play modes.")
+        if self.args.human:
+            self.args.dontlearn = True
+            return  # No further checks needed for human play
         if self.args.sessions < 0 or self.args.sessions > 100000:
             self.parser.error(
                 "Number of sessions must be between 0 and 10,000.")

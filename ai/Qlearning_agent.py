@@ -3,16 +3,22 @@ import pickle
 import const as c
 from game.state import State, QTable
 
+EPSILON = 1.0
+EPSILON_DECAY = 0.9995
+EPSILON_MIN = 0.01
+LEARNING_RATE = 0.1
+DISCOUNT = 0.9
+
 
 class QLearningAgent:
     def __init__(self, name, model=None):
         q_table = self.load_model(model) if model else None
         self.q_table = q_table if q_table is not None else {}
-        self.epsilon = 1.0
-        self.epsilon_decay = 0.9995
-        self.epsilon_min = 0.01
-        self.alpha = 0.1
-        self.gamma = 0.9
+        self.epsilon = EPSILON
+        self.epsilon_decay = EPSILON_DECAY
+        self.epsilon_min = EPSILON_MIN
+        self.alpha = LEARNING_RATE
+        self.gamma = DISCOUNT
         self.actions = ["UP", "DOWN", "LEFT", "RIGHT"]
         self.name = name
 
