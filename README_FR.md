@@ -213,6 +213,136 @@ L'agent reçoit des récompenses afin d'orienter son apprentissage :
 
 Ces récompenses permettent à l'agent d'apprendre progressivement les comportements favorables à sa survie et à l'obtention d'un score élevé.
 
+### Q-table ou réseau neuronal ?
+
+Dans ce projet, les deux approches poursuivent le même objectif, mais elles ne représentent pas l'information de la même manière.
+
+| Approche | Principe | Avantage | Limite |
+|----------|----------|----------|--------|
+| Q-table | Stocker explicitement une valeur pour chaque paire état/action | Simple à comprendre, rapide à mettre en place | Devient vite très lourde quand l'espace d'états grandit |
+| Réseau neuronal | Approximer les valeurs Q à partir de l'état | Généralise mieux et évite d'énumérer tous les états | Plus coûteux à entraîner |
+
+En pratique, la Q-table est adaptée quand l'espace d'états reste raisonnable. Elle apprend vite, car chaque mise à jour est directe.
+
+Le réseau neuronal, lui, calcule une approximation des valeurs Q. Il demande plus de calcul à chaque apprentissage, mais il peut mieux exploiter la structure de l'état et mieux généraliser entre des situations proches.
+
+Autrement dit, la Q-table mémorise, tandis que le réseau neuronal apprend une fonction d'approximation.
+
+## Bonus : Deep Learning
+> Apprentissage par réseau de neurones, en utilisant toujours la formule de Bellman pour estimer la qualité de l'action choisie.
+
+### Stack supplémentaire
+
+| Technologie | Utilisation |
+|------------|-------------|
+| PyTorch | Framework utilisé pour le deep learning |
+
+### Configuration et caractéristiques retenues
+
+L'état est représenté par 10 valeurs :
+```python
+state = [
+            float(danger[0]),                    # danger haut
+            float(danger[1]),                    # danger bas
+            float(danger[2]),                    # danger gauche
+            float(danger[3]),                    # danger droite
+            float(self.env.snake.direction[0]),  # dir_x
+            float(self.env.snake.direction[1]),  # dir_y
+            float(up_state),                     # premier élément rencontré vers le haut
+            float(down_state),
+            float(right_state),
+            float(left_state),
+        ]
+```
+
+Le réseau est un perceptron multicouche simple. Il comporte 4 couches si l'on compte la couche d'entrée :
+- Couche d'entrée : 10 neurones, correspondant aux 10 valeurs de l'état
+- Première couche cachée : 64 neurones
+- Deuxième couche cachée : 32 neurones
+- Couche de sortie : 4 neurones, correspondant aux 4 actions possibles
+
+### Pourquoi ces tailles ?
+
+Le choix 10 → 64 → 32 → 4 correspond à un compromis entre capacité d'apprentissage et simplicité :
+- 10 entrées pour représenter un état compact, lisible et stable
+- 64 neurones sur la première couche cachée pour capturer les interactions entre les dangers, la direction et la vision locale
+- 32 neurones sur la seconde couche cachée pour condenser l'information avant la décision finale
+- 4 sorties, une par action possible, en cohérence directe avec l'espace d'actions du Snake
+
+Cette architecture reste légère, s'entraîne rapidement et limite le risque de surapprentissage sur un problème relativement simple.
+
+### Algo principal
+```python
+ def learn(self, state, action, reward, next_state, done):
+        # 1: Convertit les variables en tenseurs
+        state = torch.as_tensor(np.array(state),
+                                dtype=torch.float32, device=DEVICE)
+        next_state = torch.as_tensor(np.array(next_state),
+                                     dtype=torch.float32, device=DEVICE)
+        action = torch.as_tensor(action, dtype=torch.long, device=DEVICE)
+        reward = torch.as_tensor(reward, dtype=torch.float32, device=DEVICE)
+        done = torch.as_tensor(done, dtype=torch.bool, device=DEVICE)
+
+        # Cas où il n'y a qu'une seule valeur par variable
+        if len(state.shape) == 1:
+            state = state.unsqueeze(0)
+            next_state = next_state.unsqueeze(0)
+            action = action.unsqueeze(0)
+            reward = reward.unsqueeze(0)
+            done = done.unsqueeze(0)
+
+        # 2: Prédiction de la valeur Q avec l'état courant
+        pred = self.model(state)
+
+        # 3: Calcul de la valeur Q cible avec la formule de Bellman
+        target = pred.detach().clone()
+
+        # Utilisation de torch.no_grad() pour ne pas calculer les gradients pour next_q
+        with torch.no_grad():
+            next_q = self.model(next_state).max(dim=1)[0]
+            # On ne calcule que les épisodes non terminés,
+            # car si done, next_q est uniquement la récompense immédiate.
+            q_new = reward + self.gamma * next_q * (~done)
+        # Mise à jour des valeurs Q cibles pour les actions choisies
+        target[torch.arange(len(action), device=DEVICE), action] = q_new
+
+        # 4: Backpropagation (rétropropagation)
+        # Calcul de la perte entre les valeurs Q prédites et cibles
+        # 1- Initialisation des gradients à zéro avant la rétropropagation
+        # 2- Calcul de la perte entre les valeurs Q prédites et cibles
+        # 3- Calcul de la passe arrière pour calculer les gradients
+        # 4- Mise à jour des poids du modèle à l'aide de l'optimiseur
+        self.optimizer.zero_grad()
+        loss = self.criterion(target, pred)
+        loss.backward()
+        self.optimizer.step()
+```
+
+### Durée d'entraînement
+> Sur un MacBook pro M3, device= mps
+
+Les mesures ci-dessous doivent être lues comme des observations de performance sur ce projet, pas comme une règle générale.
+Le temps dépend fortement de l'implémentation, du matériel et du type d'agent utilisé.
+
+| Sessions | Temps |
+|---|---|
+| 1_500 | 21s |
+| 10_000 | 29m43s |
+| 20_000 | 2h41m16s |
+| 40_000 | 6h25m26s |
+
+À titre de comparaison, dans mes mesures, l'agent tabulaire atteint environ 17,48 de longueur moyenne sur 40 000 sessions en beaucoup moins de temps, alors que le réseau neuronal atteint environ 15,98 de moyenne sur 40 000 sessions mais avec un coût de calcul beaucoup plus élevé.
+
+Ce contraste est normal : l'agent tabulaire met moins de temps par mise à jour, mais il dépend fortement de la taille de la Q-table, alors que le réseau neuronal paie le coût de la rétropropagation à chaque apprentissage.
+
+### Stats d'entraînement Deep Learning
+
+<img src="assets/DQL_plot-10000.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
+<img src="assets/DQL_plot-20000.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
+<img src="assets/DQL_plot-40000.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
+
+</br>
+
 ## Aperçu du jeu
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">

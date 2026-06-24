@@ -5,7 +5,7 @@ from stats.graph import save_DeepQlearning_plot
 
 
 MAX_MEMORY = 100_000
-BATCH_SIZE = 1000
+BATCH_SIZE = 256
 
 
 class SnakeDeepTrainer:
@@ -28,31 +28,70 @@ class SnakeDeepTrainer:
         in the horizontal and vertical directions,
         as well as the snake's direction.
         state = horizontal + vertical + [dir_x, dir_y]
-        W = -1, S = -0.5, O = 0, H = 0.5, R = 1, G = 2
+        W = -1, S = -1, O = 0, R = 1, G = 2
         """
         head_x, head_y = self.env.snake.body[0]
         vision_grid = self.env.vision(self.env.fruits)
-        vertical_vision = "".join(vision_grid[i][head_x + 1]
-                                  for i in range(len(vision_grid)))
-        horizontal_vision = "".join(vision_grid[head_y + 1][i]
-                                    for i in range(len(vision_grid[0])))
+        up_string = "".join(vision_grid[i][head_x + 1]
+                            for i in range(head_y + 1))
+        down_string = "".join(vision_grid[i][head_x + 1]
+                              for i in range(head_y + 2, len(vision_grid)))
+        left_string = "".join(vision_grid[head_y + 1][i]
+                              for i in range(head_x + 1))
+        right_string = "".join(vision_grid[head_y + 1][i]
+                               for i in range(head_x + 2, len(vision_grid[0])))
 
-        def get_element_value(char: str) -> float:
-            if char == 'W':
-                return -1
-            if char == 'S':
-                return -0.5
-            if char == 'H':
-                return 0.5
-            if char == 'R':
-                return 1
-            if char == 'G':
-                return 2
-            return 0
+        def is_dangerous(char: str) -> bool:
+            """Determines if a character in the vision grid
+            represents a danger to the snake."""
+            return (
+                char == 'W' or
+                char == 'S' or
+                (char == 'R' and len(self.env.snake.body) <= 2)
+            )
 
-        state = [get_element_value(c) for c in horizontal_vision]
-        state.extend([get_element_value(c) for c in vertical_vision])
-        state.extend([head_x, head_y])
+        # Immediate Danger in each direction
+        danger = (
+            is_dangerous(up_string[-1]),
+            is_dangerous(down_string[0]),
+            is_dangerous(left_string[-1]),
+            is_dangerous(right_string[0]),
+        )
+
+        # First object seen on the path
+        def scan(string: str) -> int:
+            """Iterates through the squares in order and returns
+            whatever is seen first: 'W', 'G', 'R'.
+
+            The snake's body is treated as a wall
+            to minimize the number of states.
+            """
+            for char in string:
+                if is_dangerous(char):
+                    return -1  # Wall, Body or Dangerous Red Apple
+                if char == 'R':
+                    return 1  # Safe Red Apple
+                if char == 'G':
+                    return 2  # Green Apple
+            return -1
+
+        up_state = scan(up_string[::-1])
+        down_state = scan(down_string)
+        left_state = scan(left_string[::-1])
+        right_state = scan(right_string)
+
+        state = [
+            float(danger[0]),                    # danger UP
+            float(danger[1]),                    # danger DOWN
+            float(danger[2]),                    # danger LEFT
+            float(danger[3]),                    # danger RIGHT
+            float(self.env.snake.direction[0]),  # dir_x
+            float(self.env.snake.direction[1]),  # dir_y
+            float(up_state),
+            float(down_state),
+            float(right_state),
+            float(left_state),
+        ]
 
         return np.array(state, dtype=np.float32)
 
@@ -105,16 +144,19 @@ class SnakeDeepTrainer:
                 reward, done = self.env.step(action)
                 length = len(self.env.snake.body)
 
+                if self.env.move_count > length * 100:
+                    done = True
+
                 if not done:
                     next_state = self.get_state()
                 else:
                     next_state = current_state
-
-                # self.train_short_memory(current_state,
-                #                         action_index,
-                #                         reward,
-                #                         next_state,
-                #                         done)
+                if self.agent.epsilon < 0.5:
+                    self.train_short_memory(current_state,
+                                            action_index,
+                                            reward,
+                                            next_state,
+                                            done)
                 self.remember(current_state,
                               action_index,
                               reward,
@@ -123,11 +165,12 @@ class SnakeDeepTrainer:
                 if done:
                     episode += 1
                     self.train_long_memory()
+                    self.agent.decay_epsilon()
                     self.env.save_score(f"{self.agent.name}-{episodes}")
 
                     if length > record:
                         record = length
-                        self.agent.model.save()
+                        self.agent.save_model(episodes)
 
                     # print('Game:',
                     #       episode,
@@ -141,7 +184,6 @@ class SnakeDeepTrainer:
                     mean_score = total_length / episode
                     plot_mean_length.append(mean_score)
                     # DeepQlearning_plot(plot_length, plot_mean_length)
-                self.agent.decay_epsilon()
         save_DeepQlearning_plot(plot_length, plot_mean_length)
 
     def learn_step(self, state):

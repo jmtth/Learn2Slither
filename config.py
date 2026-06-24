@@ -34,6 +34,7 @@ class AiConfig:
     agent: Any | None = None
     trainer: Any | None = None
     deep: bool = False
+    env: Any | None = None
 
 
 @dataclass

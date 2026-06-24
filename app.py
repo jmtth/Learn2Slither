@@ -64,20 +64,20 @@ def load_ai_config(args) -> AppConfig:
     app_config.ai.agent_name = generate_id()
     app_config.ai.deep = args.deep
     from game.snake_env import SnakeEnv
-    env = SnakeEnv(app_config)
+    app_config.ai.env = SnakeEnv(app_config)
     if args.deep:
         from ai.DeepQLearning_agent import DeepQAgent
         from ai.Snake_deep_trainer import SnakeDeepTrainer
         app_config.ai.agent = DeepQAgent(app_config.ai.agent_name,
                                          app_config.ai.load_name)
-        app_config.ai.trainer = SnakeDeepTrainer(env,
+        app_config.ai.trainer = SnakeDeepTrainer(app_config.ai.env,
                                                  app_config.ai.agent)
     else:
         from ai.Qlearning_agent import QLearningAgent
         from ai.Snake_trainer import SnakeTrainer
         app_config.ai.agent = QLearningAgent(app_config.ai.agent_name,
                                              app_config.ai.load_name)
-        app_config.ai.trainer = SnakeTrainer(env,
+        app_config.ai.trainer = SnakeTrainer(app_config.ai.env,
                                              app_config.ai.agent)
     return app_config
 
@@ -132,12 +132,6 @@ def main(argv: list[str] | None = None) -> int:
             print_info(game.run, config, args)()
             pygame.quit()
         else:
-            # from ai.Qlearning_agent import QLearningAgent
-            # from game.snake_env import SnakeEnv
-            # from ai.Snake_trainer import SnakeTrainer
-            # env = SnakeEnv(config)
-            # agent = QLearningAgent(config.ai.agent_name, config.ai.load_name)
-            # trainer = SnakeTrainer(env, agent)
             if config.ai.trainer is None:
                 raise RuntimeError("AI trainer is not initialized")
             if config.ai.learn:
@@ -150,8 +144,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-        # try:
-        #     main()
-        # except Exception as e:
-        #     print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
+    try:
         main()
+    except Exception as e:
+        print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")

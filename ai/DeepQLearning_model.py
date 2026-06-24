@@ -44,4 +44,7 @@ class DeepQModel(nn.Module):
         model_folder_path = './models'
         file_name = os.path.join(model_folder_path, file_name)
         if os.path.exists(file_name):
-            self.load_state_dict(torch.load(file_name))
+            try:
+                self.load_state_dict(torch.load(file_name))
+            except Exception:
+                print(f"Error loading model: file '{file_name}' is corrupted.")

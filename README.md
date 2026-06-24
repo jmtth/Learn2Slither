@@ -210,6 +210,123 @@ The agent receives rewards to guide its learning:
 
 These rewards allow the agent to gradually learn behaviors that improve survival and achieve a higher score.
 
+### Q-table or neural network?
+
+Both approaches pursue the same goal, but they do not represent information in the same way.
+
+| Approach | Principle | Advantage | Limitation |
+|----------|-----------|-----------|------------|
+| Q-table | Explicitly stores a value for each state/action pair | Easy to understand and quick to implement | Becomes heavy as the state space grows |
+| Neural network | Approximates Q-values from the state | Generalizes better and avoids enumerating every state | More expensive to train |
+
+In practice, the Q-table is a good fit when the state space remains manageable. It learns quickly because each update is direct.
+
+The neural network computes an approximation of the Q-values. It requires more computation at each learning step, but it can better exploit the structure of the state and generalize across similar situations.
+
+In short, the Q-table memorizes, while the neural network learns an approximation function.
+
+## Bonus: Deep Learning
+> Neural network learning, still based on Bellman's equation to estimate the quality of the chosen action.
+
+### Additional stack
+
+| Technology | Purpose |
+|------------|---------|
+| PyTorch | Framework used for deep learning |
+
+### Configuration and chosen features
+
+The state is represented by 10 values:
+```python
+state = [
+      float(danger[0]),                    # danger up
+      float(danger[1]),                    # danger down
+      float(danger[2]),                    # danger left
+      float(danger[3]),                    # danger right
+      float(self.env.snake.direction[0]),  # dir_x
+      float(self.env.snake.direction[1]),  # dir_y
+      float(up_state),                     # first object encountered upward
+      float(down_state),
+      float(right_state),
+      float(left_state),
+    ]
+```
+
+The network is a simple multilayer perceptron. It has 4 layers if the input layer is counted:
+- Input layer: 10 neurons, matching the 10 state values
+- First hidden layer: 64 neurons
+- Second hidden layer: 32 neurons
+- Output layer: 4 neurons, matching the 4 possible actions
+
+### Why these sizes?
+
+The 10 -> 64 -> 32 -> 4 choice is a compromise between learning capacity and simplicity:
+- 10 inputs to keep the state compact, readable, and stable
+- 64 neurons in the first hidden layer to capture interactions between dangers, direction, and local vision
+- 32 neurons in the second hidden layer to compress the information before the final decision
+- 4 outputs, one per possible action, aligned directly with the Snake action space
+
+This architecture stays lightweight, trains quickly, and helps limit overfitting on a relatively simple problem.
+
+### Main learning step
+```python
+ def learn(self, state, action, reward, next_state, done):
+    # 1: Convert values to tensors
+    state = torch.as_tensor(np.array(state),
+                dtype=torch.float32, device=DEVICE)
+    next_state = torch.as_tensor(np.array(next_state),
+                   dtype=torch.float32, device=DEVICE)
+    action = torch.as_tensor(action, dtype=torch.long, device=DEVICE)
+    reward = torch.as_tensor(reward, dtype=torch.float32, device=DEVICE)
+    done = torch.as_tensor(done, dtype=torch.bool, device=DEVICE)
+
+    # Case where each variable contains only one value
+    if len(state.shape) == 1:
+      state = state.unsqueeze(0)
+      next_state = next_state.unsqueeze(0)
+      action = action.unsqueeze(0)
+      reward = reward.unsqueeze(0)
+      done = done.unsqueeze(0)
+
+    # 2: Predict the Q-value for the current state
+    pred = self.model(state)
+
+    # 3: Compute the target Q-value using Bellman's equation
+    target = pred.detach().clone()
+
+    # Use torch.no_grad() to avoid computing gradients for next_q
+    with torch.no_grad():
+      next_q = self.model(next_state).max(dim=1)[0]
+      # Only non-terminal episodes are bootstrapped,
+      # because if done, next_q is only the immediate reward.
+      q_new = reward + self.gamma * next_q * (~done)
+    # Update the target Q-values for the chosen actions
+    target[torch.arange(len(action), device=DEVICE), action] = q_new
+
+    # 4: Backpropagation
+    self.optimizer.zero_grad()
+    loss = self.criterion(target, pred)
+    loss.backward()
+    self.optimizer.step()
+```
+
+### Training time
+> On a MacBook Pro M3, device = mps
+
+These figures should be read as performance observations from this project, not as a general rule.
+Training time depends heavily on the implementation, the hardware, and the type of agent used.
+
+| Sessions | Time |
+|---|---|
+| 1_500 | 21s |
+| 10_000 | 29m43s |
+| 20_000 | 2h41m16s |
+| 40_000 | 6h25m26s |
+
+In my measurements, the tabular agent reaches about 17.48 average length over 40,000 sessions in much less time, while the neural network reaches about 15.98 average length over 40,000 sessions but with a much higher compute cost.
+
+This difference is normal: the tabular agent is cheaper per update, but it depends strongly on the size of the Q-table, while the neural network pays the cost of backpropagation at every learning step.
+
 ## Game Preview
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">

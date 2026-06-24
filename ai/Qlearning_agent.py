@@ -12,8 +12,7 @@ DISCOUNT = 0.9
 
 class QLearningAgent:
     def __init__(self, name, model=None):
-        q_table = self.load_model(model) if model else None
-        self.q_table = q_table if q_table is not None else {}
+        self.set_model_name(model)
         self.epsilon = EPSILON
         self.epsilon_decay = EPSILON_DECAY
         self.epsilon_min = EPSILON_MIN
@@ -21,6 +20,11 @@ class QLearningAgent:
         self.gamma = DISCOUNT
         self.actions = ["UP", "DOWN", "LEFT", "RIGHT"]
         self.name = name
+
+    def set_model_name(self, model_name):
+        self.model_name = model_name if model_name else None
+        q_table = self.load_model(self.model_name) if self.model_name else None
+        self.q_table = q_table if q_table is not None else {}
 
     def get_q_values(self, state):
         """Returns the Q-values for the given state,

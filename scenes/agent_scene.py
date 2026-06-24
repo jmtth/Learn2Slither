@@ -1,8 +1,6 @@
 import pygame
 from scenes.scene import Scene
 from render.game_render import GameRender
-from game.snake_env import SnakeEnv
-# from ai.Snake_trainer import SnakeTrainer
 from ai.Qlearning_agent import QLearningAgent
 from controllers.agent_controller import AgentController
 
@@ -11,9 +9,13 @@ class AgentScene(Scene):
     """Scene for training and evaluating the AI agent. """
     def __init__(self, app):
         super().__init__(app)
-        self.env = SnakeEnv(app.config)
+        self.env = app.config.ai.env
+        self.env.reset()
         self.renderer = GameRender(app.config)
         self.LearningAgent = app.config.ai.agent
+        if app.config.ai.load_name:
+            self.LearningAgent.set_model_name(app.config.ai.load_name)
+        print(f"Model name: {self.LearningAgent.model_name}")
         self.SnakeTrainer = app.config.ai.trainer
         self.controller = AgentController()
         self.episode = 0
