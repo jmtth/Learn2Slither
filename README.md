@@ -328,6 +328,7 @@ In my measurements, the tabular agent reaches about 17.48 average length over 40
 This difference is normal: the tabular agent is cheaper per update, but it depends strongly on the size of the Q-table, while the neural network pays the cost of backpropagation at every learning step.
 
 ## Game Preview
+![Learn2Slither Demo](assets/Learn2Slither.gif)
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/GameSettings.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
