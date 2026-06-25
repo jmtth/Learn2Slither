@@ -1,6 +1,6 @@
 import pygame
 from scenes.scene import Scene
-import const as c
+import helpers.const as c
 
 
 class GameSettings(Scene):

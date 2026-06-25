@@ -1,7 +1,7 @@
 import pygame
 from scenes.scene import Scene
 from scenes.agent_scene import AgentScene
-import const as c
+import helpers.const as c
 import os
 
 

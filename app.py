@@ -1,14 +1,14 @@
 import sys
-from parser import Parser
+from helpers.parser import Parser
 import pygame
 import random
 import string
 from scenes.mainmenu_scene import MainMenuScene
 from scenes.agent_scene import AgentScene
-from config import AppConfig
+from helpers.config import AppConfig
 from scenes.scene import Scene
 from stats.manage_csv import MyStats
-import const as c
+import helpers.const as c
 from stats.graph import plot_scores
 
 

@@ -2,7 +2,7 @@
 import argparse
 import pickle
 from game.state import State, QTable
-import const as c
+import helpers.const as c
 
 
 class Parser:

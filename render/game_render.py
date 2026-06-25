@@ -1,7 +1,7 @@
 import pygame
-import const as c
+import helpers.const as c
 from render.popup_render import Popup
-from config import AppConfig
+from helpers.config import AppConfig
 from game.snake_env import SnakeEnv
 from game.snake import Snake
 from game.apple import Apple

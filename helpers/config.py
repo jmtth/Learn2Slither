@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any
-import const as c
+import helpers.const as c
 
 
 @dataclass

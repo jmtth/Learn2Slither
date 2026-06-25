@@ -2,7 +2,7 @@ import random
 
 from game.apple import Apple
 from game.snake import Snake
-import const as c
+import helpers.const as c
 import csv
 import datetime
 import os

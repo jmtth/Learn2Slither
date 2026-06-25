@@ -1,6 +1,6 @@
 import random
 import pickle
-import const as c
+import helpers.const as c
 from game.state import State, QTable
 
 EPSILON = 1.0

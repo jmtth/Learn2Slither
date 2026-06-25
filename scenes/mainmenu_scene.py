@@ -5,7 +5,7 @@ from scenes.game_settings_scene import GameSettings
 from scenes.stats_scene import StatsScene
 from scenes.ai_settings_scene import AISettings
 import render.button_render as button
-import const as c
+import helpers.const as c
 
 
 class MainMenuScene(Scene):

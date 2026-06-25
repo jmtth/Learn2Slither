@@ -1,6 +1,6 @@
-import const as c
+import helpers.const as c
 import pygame
-from config import AppConfig
+from helpers.config import AppConfig
 
 
 class Popup:

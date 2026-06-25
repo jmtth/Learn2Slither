@@ -1,5 +1,5 @@
 import random
-from config import GameConfig
+from helpers.config import GameConfig
 
 
 class Snake:
