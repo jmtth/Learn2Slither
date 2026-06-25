@@ -51,8 +51,10 @@ class SnakeTrainer:
             for char in string:
                 if is_dangerous(char):
                     return 'W'  # Wall, Body or Dangerous Red Apple
-                if char == 'G' or char == 'R':
-                    return char
+                if char == 'G':
+                    return 'G'
+                if char == 'R':
+                    return 'R'
             return 'W'
 
         up_state = scan(up_string[::-1])

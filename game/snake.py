@@ -5,7 +5,7 @@ from helpers.config import GameConfig
 class Snake:
     """Represents the snake in the game."""
     def __init__(self, config: GameConfig):
-        self.body = []
+        self.body: list[tuple[int, int]] = []
         self.direction = (-1, 0)  # Initial direction: moving right
         self.size = config.initial_size
         self.nb_cells = config.nb_cells
