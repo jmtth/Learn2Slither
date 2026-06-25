@@ -172,13 +172,6 @@ class SnakeDeepTrainer:
                         record = length
                         self.agent.save_model(episodes)
 
-                    # print('Game:',
-                    #       episode,
-                    #       'Length:',
-                    #       length,
-                    #       'Record:',
-                    #       record)
-
                     plot_length.append(length)
                     total_length += length
                     mean_score = total_length / episode

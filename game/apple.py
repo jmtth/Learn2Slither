@@ -1,8 +1,3 @@
-# import random
-# import const as c
-# import pygame
-
-
 class Apple:
     """Represents an apple in the game.
 
