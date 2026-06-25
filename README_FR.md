@@ -346,10 +346,12 @@ Ce contraste est normal : l'agent tabulaire met moins de temps par mise à jour,
 ## Aperçu du jeu
 
 <video width="300" height="200" controls>
-  <source src="assets/Learn2Slither.mp4" type="video/mp4">
+  <source src="https://youtu.be/NLY8kAvp5kU" type="video/mp4">
 </video>
 
-[![Learn2Slither Demo](assets/Menu.png)](https://youtu.be/NLY8kAvp5kU)
+[![Learn2Slither Demo](http://i.ytimg.com/vi/NLY8kAvp5kU/hqdefault.jpg)](https://www.youtube.com/watch?v=NLY8kAvp5kU)
+
+
 
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
@@ -359,3 +361,4 @@ Ce contraste est normal : l'agent tabulaire met moins de temps par mise à jour,
 <img src="assets/GameStats.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 
 
+![Learn2Slither Demo](assets/Learn2Slither.gif)
