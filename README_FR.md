@@ -345,7 +345,9 @@ Ce contraste est normal : l'agent tabulaire met moins de temps par mise à jour,
 
 ## Aperçu du jeu
 
-https://github.com/jmtth/Learn2Slither/assets/Learn2slither.mp4
+<video width="300" height="200" controls>
+  <source src="https://github.com/jmtth/Learn2Slither/assets/Learn2Slither.mp4" type="video/mp4">
+</video>
 
 <img src="assets/Menu.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
 <img src="assets/GameSettings.png" alt="A floating image" style="width: 300px; float: left; margin-left: 15px;">
