@@ -100,7 +100,7 @@ class SnakeTrainer:
         print(self.agent.q_table)
         self.agent.save_model(episodes)
 
-    def learn_step(self, state: State):
+    def learn_step(self, state: State) -> str:
         """Performs a single learning step for the Q-learning agent.
         This is used for training in the visual mode where the game loop
         is controlled by the AgentScene."""
@@ -117,13 +117,15 @@ class SnakeTrainer:
             next_state,
             done
         )
+        return action
 
-    def play_step(self, state: State):
+    def play_step(self, state: State) -> str:
         """Performs a single step for the Q-learning agent without learning.
         This is used for playing in the visual mode where the game loop
         is controlled by the AgentScene."""
         action = self.agent.best_action(state)
         self.env.step(action)
+        return action
 
     def play(self, episodes: int):
         """Plays a full game using the Q-learning agent without learning.

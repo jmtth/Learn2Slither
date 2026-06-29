@@ -29,7 +29,7 @@ class GameSettings(Scene):
         self.app = app
         self.nb_cells_index = 0
         self.speed_index = 0
-        self.sbs = self.app.config.render.step_by_step
+        self.sbs = self.app.config.ai.step_by_step
         self.font = pygame.font.Font(
             "assets/PressStart2P-Regular.ttf", 18)
         self.font_title = pygame.font.Font(
@@ -58,7 +58,7 @@ class GameSettings(Scene):
                 self.app.change_scene(MainMenuScene(self.app))
             elif event.key == pygame.K_s:
                 self.sbs = not self.sbs
-                self.app.config.render.step_by_step = self.sbs
+                self.app.config.ai.step_by_step = self.sbs
 
     def update(self):
         pass

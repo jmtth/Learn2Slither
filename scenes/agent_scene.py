@@ -22,7 +22,8 @@ class AgentScene(Scene):
         self.last_move_time = 0
         self.move_delay = app.config.render.ms
         self.start_time = pygame.time.get_ticks()
-        self.step_key = False
+        self.step_key = app.config.ai.step_by_step
+        self.env.print_vision(self.env.fruits)
 
     def handle_event(self, event):
         step = self.controller.handle_event(event)
@@ -52,7 +53,9 @@ class AgentScene(Scene):
         """Performs a simple learning step for the Q-learning agent.
         This is used for training in the visual mode.
         """
-        self.SnakeTrainer.learn_step(self.SnakeTrainer.get_state())
+        action = self.SnakeTrainer.learn_step(self.SnakeTrainer.get_state())
+        print(f"{action}\n")
+        self.env.print_vision(self.env.fruits)
         if self.env.game_over:
             player_name = f"{self.SnakeTrainer.agent.name}"
             player_name += f"-{self.app.config.ai.sessions}"
@@ -75,11 +78,15 @@ class AgentScene(Scene):
         the pace of the game by pressing the 'S' key to advance
         one step at a time.
         """
+        action = "FORWARD"
         if not self.env.game_over and not self.env.paused:
             if self.app.config.ai.step_by_step:
                 if self.step_key:
-                    self.SnakeTrainer.play_step(self.SnakeTrainer.get_state())
+                    action = self.SnakeTrainer.play_step(
+                        self.SnakeTrainer.get_state())
                     self.step_key = False
+                    print(f"{action}\n")
+                    self.env.print_vision(self.env.fruits)
             else:
                 now = pygame.time.get_ticks()
                 launch_time = now - self.start_time
@@ -87,8 +94,11 @@ class AgentScene(Scene):
                     launch_time > 2000
                     and now - self.last_move_time >= self.move_delay
                 ):
-                    self.SnakeTrainer.play_step(self.SnakeTrainer.get_state())
+                    action = self.SnakeTrainer.play_step(
+                        self.SnakeTrainer.get_state())
                     self.last_move_time = now
+                    print(f"{action}\n")
+                    self.env.print_vision(self.env.fruits)
             if self.env.game_over:
                 sessions_name = f"{self.SnakeTrainer.agent.name}"
                 sessions_name += f"-{self.app.config.ai.sessions}"

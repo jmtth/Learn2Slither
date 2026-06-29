@@ -38,7 +38,7 @@ class HumanScene(Scene):
 
     def update(self):
         if not self.gameover and not self.pause:
-            if self.app.config.render.step_by_step:
+            if self.app.config.ai.step_by_step:
                 if self.pending_action:
                     self.do_step()
             else:

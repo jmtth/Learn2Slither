@@ -37,6 +37,7 @@ class AISettings(Scene):
         self.app.config.ai.learn = False
         self.nb_cells_index = 0
         self.speed_index = 0
+        self.sbs = self.app.config.ai.step_by_step
         # Load 9 models from the models directory
         files = os.listdir(c.MODELS_DIR)
         if not app.config.ai.deep:
@@ -78,7 +79,7 @@ class AISettings(Scene):
                 self.model_index = (self.model_index + 1) % len(self.models)
             elif event.key == pygame.K_s:
                 self.sbs = not self.sbs
-                self.app.config.render.step_by_step = self.sbs
+                self.app.config.ai.step_by_step = self.sbs
 
     def update(self):
         pass
@@ -93,11 +94,15 @@ class AISettings(Scene):
         board_size_text = self.font.render(
             f"BOARD SIZE: {size}/{c.CELLS_OPTIONS[-1]}", True, c.WHITE)
         speed_text = self.font.render(f"SPEED: {speed}", True, c.WHITE)
+        step_by_step_text = self.font.render(
+            f"STEP-BY-STEP: {'ON' if self.sbs else 'OFF'}", True, c.WHITE)
 
         screen.blit(board_size_text, board_size_text.get_rect(
             center=(self.screen_width // 2, 150)))
         screen.blit(speed_text, speed_text.get_rect(
-            center=(self.screen_width // 2, 200)))
+            center=(self.screen_width // 2, 180)))
+        screen.blit(step_by_step_text, step_by_step_text.get_rect(
+            center=(self.screen_width // 2, 210)))
 
         model_title = self.font.render("SELECT MODEL:", True, c.WHITE)
         screen.blit(model_title, model_title.get_rect(top=250, left=50))

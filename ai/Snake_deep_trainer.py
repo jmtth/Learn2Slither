@@ -180,7 +180,7 @@ class SnakeDeepTrainer:
                     # DeepQlearning_plot(plot_length, plot_mean_length)
         save_DeepQlearning_plot(plot_length, plot_mean_length)
 
-    def learn_step(self, state):
+    def learn_step(self, state) -> str:
         """Performs a single learning step for the Deep Q-learning agent.
         This is used for training in the visual mode where the game loop"""
         current_state = state
@@ -203,12 +203,15 @@ class SnakeDeepTrainer:
         if done:
             self.train_long_memory()
 
-    def play_step(self, state):
+        return action
+
+    def play_step(self, state) -> str:
         """Performs a single play step for the Deep Q-learning agent.
         This is used for playing in the visual mode where the game loop
         is controlled by the AgentScene."""
         action, _ = self.agent.best_action(state)
         self.env.step(action)
+        return action
 
     def play(self, episodes: int):
         """Plays a full game using the Q-learning agent without learning.
