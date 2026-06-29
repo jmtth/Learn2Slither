@@ -1,7 +1,20 @@
 import matplotlib.pyplot as plt
 from IPython import display
+import time
 
 plt.ion()
+
+
+def _wait_for_plot(duration: float):
+    """Keep the window responsive without accessing a closed figure."""
+    figure = plt.gcf()
+    figure_number = getattr(figure, "number", None)
+    deadline = time.monotonic() + duration
+    while time.monotonic() < deadline:
+        if figure_number is None or not plt.fignum_exists(figure_number):
+            break
+        remaining = deadline - time.monotonic()
+        plt.pause(0.1 if remaining > 0.1 else max(remaining, 0.0))
 
 
 def DeepQlearning_plot(scores, mean_scores):
@@ -16,8 +29,10 @@ def DeepQlearning_plot(scores, mean_scores):
     plt.ylim(ymin=0)
     plt.text(len(scores)-1, scores[-1], str(scores[-1]))
     plt.text(len(mean_scores)-1, mean_scores[-1], str(mean_scores[-1]))
+    plt.savefig("DQL_plot.png")
     plt.show(block=False)
-    plt.pause(.1)
+    plt.pause(0.001)
+    _wait_for_plot(5)
 
 
 def save_DeepQlearning_plot(scores, mean_scores, filename="DQL_plot.png"):
@@ -67,6 +82,7 @@ def plot_scores(scores, mean_score, min_score, max_score):
         label=f"Max ({max_score:.2f})"
     )
     plt.legend()
-    plt.show()
-    plt.pause(5)
     plt.savefig("QL_plot.png")
+    plt.show(block=False)
+    plt.pause(0.001)
+    _wait_for_plot(5)
