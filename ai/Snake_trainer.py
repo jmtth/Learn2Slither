@@ -1,6 +1,7 @@
 from game.state import State, Object
 from game.snake_env import SnakeEnv
 from ai.Qlearning_agent import QLearningAgent
+from tqdm import tqdm
 
 
 class SnakeTrainer:
@@ -73,7 +74,7 @@ class SnakeTrainer:
 
     def train(self, episodes: int):
         """Trains the Q-learning agent for a specified number of episodes."""
-        for _ in range(episodes):
+        for _ in tqdm(range(episodes), desc="Training Q-Learning Agent"):
             self.env.reset()
             state = self.get_state()
             done = False

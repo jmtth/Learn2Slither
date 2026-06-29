@@ -2,6 +2,7 @@ import random
 import numpy as np
 from collections import deque
 from stats.graph import save_DeepQlearning_plot
+from tqdm import tqdm
 
 
 MAX_MEMORY = 100_000
@@ -132,7 +133,7 @@ class SnakeDeepTrainer:
         total_length = 0
         record = 0
 
-        for _ in range(episodes):
+        for _ in tqdm(range(episodes), desc="Training Deep Q-Learning Agent"):
             self.env.reset()
             done = False
 
@@ -186,7 +187,11 @@ class SnakeDeepTrainer:
         action, action_index = self.agent.choose_action(current_state)
 
         reward, done = self.env.step(action)
-        next_state = self.get_state()
+
+        if not done:
+            next_state = self.get_state()
+        else:
+            next_state = state
 
         self.train_short_memory(current_state,
                                 action_index,

@@ -1,4 +1,5 @@
 import sys
+import time
 from helpers.parser import Parser
 import pygame
 import random
@@ -93,15 +94,28 @@ def print_stats(config: AppConfig):
     stats_message += f"Mean length: {mean_length} "
     stats_message += f"in {config.ai.sessions} episodes"
     print(stats_message)
-    model_path = f"{c.MODELS_DIR}{config.ai.save_name}"
+    model_path = f"{c.MODELS_DIR}{config.ai.agent_name}"
     model_path += f"_{str(config.ai.sessions)}.pkl"
     print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
     scores, min_score, max_score = stats.get_sessions_scores(player)
     plot_scores(scores, mean_length, min_score, max_score)
 
 
+def print_duration(start_time: float, end_time: float):
+    """Prints the duration of the training in minutes and seconds."""
+    # Subtract 5 seconds to account for graph plotting time,
+    # which is not part of the actual training duration.
+    elapsed_time = end_time - start_time - 5
+    minutes = int(elapsed_time // 60)
+    seconds = elapsed_time % 60
+    message = f"{c.T_GREEN}Training time:{c.T_RESET} {minutes} minutes"
+    message += f" and {seconds:.2f} seconds "
+    print(message)
+
+
 def print_info(function, config: AppConfig, pargs):
     def wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
         if config.ai.learn:
             print(f"\nStarting training for {pargs.sessions} sessions...\n")
             if not pargs.deep:
@@ -109,6 +123,8 @@ def print_info(function, config: AppConfig, pargs):
         result = function(*args, **kwargs)
         if config.ai.learn:
             print_stats(config)
+            end_time = time.perf_counter()
+            print_duration(start_time, end_time)
         return result
     return wrapper
 
@@ -144,7 +160,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception as e:
-        print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
+    # try:
+    #     main()
+    # except Exception as e:
+    #     print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
+    main()
