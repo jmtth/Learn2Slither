@@ -117,6 +117,8 @@ class SnakeEnv:
         """Generates a vision grid for the snake,
         showing the relative positions.
         """
+        if not self.snake.body:
+            return []
         head_x, head_y = self.snake.body[0]
         body_positions = set(self.snake.body[1:])
         fruit_map = {tuple(f.position): f for f in fruits}

@@ -160,8 +160,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-    # try:
-    #     main()
-    # except Exception as e:
-    #     print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"{c.T_RED}Learn2Slither Error: {e}{c.T_RESET}")
