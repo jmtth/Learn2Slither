@@ -40,6 +40,9 @@ class SnakeEnv:
         reward += self.check_self_collision()
         reward += self.check_fruit_collision()
         self.move_count += 1
+        if self.move_count >= len(self.snake.body) * 100:
+            self.game_over = True
+            reward += c.DEATH_REWARD
         return reward, self.game_over
 
     def spawn_fruit(self, color: tuple[int, int, int]):

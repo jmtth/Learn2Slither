@@ -11,8 +11,9 @@ DISCOUNT = 0.9
 
 
 class QLearningAgent:
-    def __init__(self, name, model=None):
+    def __init__(self, name, model=None, save_name=None):
         self.set_model_name(model)
+        self.save_name = save_name
         self.epsilon = EPSILON
         self.epsilon_decay = EPSILON_DECAY
         self.epsilon_min = EPSILON_MIN
@@ -81,8 +82,14 @@ class QLearningAgent:
         )
 
     def save_model(self, episodes=10):
-        with open(f"{c.MODELS_DIR}{self.name}_{episodes}.pkl", "wb") as file:
-            pickle.dump(self.q_table, file)
+        if self.save_name and self.save_name != "q_table":
+            with open(f"{c.MODELS_DIR}{self.save_name}_{episodes}.pkl",
+                      "wb") as file:
+                pickle.dump(self.q_table, file)
+        else:
+            with open(f"{c.MODELS_DIR}{self.name}_{episodes}.pkl",
+                      "wb") as file:
+                pickle.dump(self.q_table, file)
 
     def load_model(self, path: str = "q_table_10.pkl"):
         if not path.endswith(".pkl"):

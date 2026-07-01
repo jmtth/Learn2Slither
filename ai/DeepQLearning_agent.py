@@ -21,8 +21,9 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class DeepQAgent:
-    def __init__(self, name, load_name=None):
+    def __init__(self, name, load_name=None, save_name=None):
         self.name = name
+        self.save_name = save_name
         self.set_model_name(load_name)
         self.epsilon = EPSILON
         self.gamma = DISCOUNT
@@ -113,4 +114,7 @@ class DeepQAgent:
 
     def save_model(self, episodes):
         """Saves the model's state dictionary to a file."""
-        self.model.save(f"{self.name}-{episodes}.pth")
+        if self.save_name and self.save_name != "q_table":
+            self.model.save(f"{self.save_name}-{episodes}.pth")
+        else:
+            self.model.save(f"{self.name}-{episodes}.pth")

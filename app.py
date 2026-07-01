@@ -59,7 +59,8 @@ def load_ai_config(args) -> AppConfig:
     app_config.ai.sessions = args.sessions
     app_config.ai.visual = args.visual
     app_config.ai.load_name = args.load if args.load else None
-    app_config.ai.save_name = args.save
+    if args.save and args.save != "q_table":
+        app_config.ai.save_name = args.save
     app_config.ai.learn = not args.dontlearn
     app_config.ai.step_by_step = args.step_by_step
     app_config.ai.agent_name = generate_id()
@@ -70,14 +71,16 @@ def load_ai_config(args) -> AppConfig:
         from ai.DeepQLearning_agent import DeepQAgent
         from ai.Snake_deep_trainer import SnakeDeepTrainer
         app_config.ai.agent = DeepQAgent(app_config.ai.agent_name,
-                                         app_config.ai.load_name)
+                                         app_config.ai.load_name,
+                                         app_config.ai.save_name)
         app_config.ai.trainer = SnakeDeepTrainer(app_config.ai.env,
                                                  app_config.ai.agent)
     else:
         from ai.Qlearning_agent import QLearningAgent
         from ai.Snake_trainer import SnakeTrainer
         app_config.ai.agent = QLearningAgent(app_config.ai.agent_name,
-                                             app_config.ai.load_name)
+                                             app_config.ai.load_name,
+                                             app_config.ai.save_name)
         app_config.ai.trainer = SnakeTrainer(app_config.ai.env,
                                              app_config.ai.agent)
     return app_config
@@ -94,9 +97,28 @@ def print_stats(config: AppConfig):
     stats_message += f"Mean length: {mean_length} "
     stats_message += f"in {config.ai.sessions} episodes"
     print(stats_message)
-    model_path = f"{c.MODELS_DIR}{config.ai.agent_name}"
+    if config.ai.save_name and config.ai.save_name != "q_table":
+        name = config.ai.save_name
+    else:
+        name = config.ai.agent_name
+    model_path = f"{c.MODELS_DIR}{name}"
     model_path += f"_{str(config.ai.sessions)}.pkl"
     print(f"{c.T_GREEN}Model saved as: {c.T_RESET}{model_path}")
+    scores, min_score, max_score = stats.get_sessions_scores(player)
+    plot_scores(scores, mean_length, min_score, max_score)
+
+
+def print_dontlearn_stats(config: AppConfig):
+    """ Prints statistics after AI evaluation is completed. """
+    stats = MyStats()
+    player = f"{config.ai.agent_name}-{config.ai.sessions}"
+    max_length, max_moves, mean_length = stats.get_sessions_stat(player)
+    stats_message = f"{c.T_GREEN}\nEvaluation completed: {c.T_RESET}"
+    stats_message += f"Max length: {max_length}, "
+    stats_message += f"Max moves: {max_moves} "
+    stats_message += f"Mean length: {mean_length} "
+    stats_message += f"in {config.ai.sessions} episodes"
+    print(stats_message)
     scores, min_score, max_score = stats.get_sessions_scores(player)
     plot_scores(scores, mean_length, min_score, max_score)
 
@@ -156,6 +178,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 print(f"\nStarting evaluation for {args.sessions} episodes.\n")
                 config.ai.trainer.play(args.sessions)
+                print_dontlearn_stats(config)
     return 0
 
 

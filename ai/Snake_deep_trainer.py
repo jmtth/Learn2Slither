@@ -145,9 +145,6 @@ class SnakeDeepTrainer:
                 reward, done = self.env.step(action)
                 length = len(self.env.snake.body)
 
-                if self.env.move_count > length * 100:
-                    done = True
-
                 if not done:
                     next_state = self.get_state()
                 else:
